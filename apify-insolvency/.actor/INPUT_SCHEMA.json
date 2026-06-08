@@ -1,0 +1,45 @@
+{
+  "actorInputSchemaVersion": 1,
+  "title": "German Insolvency Register Search",
+  "description": "Search the German insolvency register (Insolvenzbekanntmachungen.de)",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "apiKey": {
+      "title": "API Key",
+      "type": "string",
+      "description": "Your API key from the marketplace. Get one at rapidapi.com/search/german-insolvency",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "apiBaseUrl": {
+      "title": "API Base URL",
+      "type": "string",
+      "description": "Base URL of the API. Default: https://api.yourdomain.com",
+      "editor": "textfield",
+      "default": "https://api.yourdomain.com"
+    },
+    "name": {
+      "title": "Debtor Name",
+      "type": "string",
+      "description": "Name of the person or company to search for",
+      "editor": "textfield"
+    },
+    "city": {
+      "title": "City",
+      "type": "string",
+      "description": "Filter by city of the court (e.g. 'München', 'Berlin')",
+      "editor": "textfield"
+    },
+    "maxResults": {
+      "title": "Max Results",
+      "type": "integer",
+      "description": "Maximum number of results to return (1-200)",
+      "default": 50,
+      "minimum": 1,
+      "maximum": 200,
+      "editor": "number"
+    }
+  },
+  "required": ["apiKey"]
+}

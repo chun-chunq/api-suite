@@ -1,0 +1,101 @@
+# GitHub Actions CI — place this file at .github/workflows/ci.yml in your repo
+#
+# Runs on every push and pull request:
+#   1. Builds all Go services
+#   2. Runs all tests
+#   3. Validates docker-compose syntax
+#   4. Validates nginx config syntax
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: Build & Test All Services
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          - gateway
+          - namepredict-api
+          - worldbank-api
+          - clinicaltrials-api
+          - vat-api
+          - countries-api
+          - pubchem-api
+          - nasa-api
+          - airquality-api
+          - exchangerate-api
+          - gbif-api
+          - resilience
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+          cache-dependency-path: "${{ matrix.service }}/go.sum"
+
+      - name: Build ${{ matrix.service }}
+        working-directory: ${{ matrix.service }}
+        run: go build ./...
+
+      - name: Test ${{ matrix.service }}
+        working-directory: ${{ matrix.service }}
+        run: go test -race -timeout 60s ./...
+
+  validate-docker-compose:
+    name: Validate docker-compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check docker-compose syntax
+        run: |
+          cd deploy
+          docker compose config --quiet
+        env:
+          ADMIN_SECRET: "ci-test-secret"
+          API_KEYS: "test-key:basic"
+          DASHBOARD_PASSWORD: "ci-test"
+          WORKER_SECRET: "ci-test"
+          COMPANIES_HOUSE_API_KEY: ""
+          TED_API_KEY: ""
+          NASA_API_KEY: ""
+          RAPIDAPI_PROXY_SECRET: ""
+          DOMAIN: "example.com"
+          SSL_EMAIL: "test@example.com"
+          LOG_LEVEL: "info"
+
+  validate-nginx:
+    name: Validate nginx config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check nginx syntax
+        run: |
+          # Create dummy SSL certs at the exact path nginx.conf expects
+          DOMAIN="api.yourdomain.com"
+          CERT_DIR="/tmp/letsencrypt/live/${DOMAIN}"
+          mkdir -p "${CERT_DIR}"
+          openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
+            -keyout "${CERT_DIR}/privkey.pem" \
+            -out    "${CERT_DIR}/fullchain.pem" \
+            -subj "/CN=${DOMAIN}" 2>/dev/null
+
+          # Run nginx -t with certs mounted at the path nginx.conf references
+          docker run --rm \
+            -v $(pwd)/deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
+            -v /tmp/letsencrypt:/etc/letsencrypt:ro \
+            nginx:alpine \
+            nginx -t 2>&1 | tee /tmp/nginx-check.txt || true
+
+          # Fail only on real syntax errors, not cert/path warnings
+          grep -i "emerg\|syntax error" /tmp/nginx-check.txt && exit 1 || exit 0

@@ -1,0 +1,22 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      PORT: "8084"
+      API_KEYS: "demo-key-12345"
+      ADMIN_SECRET: "admin-secret-aendere-mich"
+      RATE_LIMIT_MAX: "200"         # 200 checks/hour per key (compliance use = high volume)
+      RATE_LIMIT_WINDOW: "1h"
+      REFRESH_INTERVAL: "6h"        # re-download EU list every 6 hours
+      LOG_LEVEL: "info"
+      GOMEMLIMIT: "128MiB"          # pure Go — much smaller than Chrome-based APIs
+      GOGC: "100"
+    restart: unless-stopped
+    # No Redis needed — data is in-memory (loaded from EU on start)
+    # No Chrome needed — pure HTTP download + XML parse
+    mem_limit: 256m    # ~100MB for indexed sanctions data + Go runtime
+    mem_reservation: 64m

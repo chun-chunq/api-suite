@@ -1,0 +1,195 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EU Sanctions List API",
+    "description": "Real-time KYC & AML screening against the official EU Consolidated Sanctions List. Search 5,000+ sanctioned individuals, entities and vessels — updated daily from the European Commission.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "help@novaroute.fyi"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.novaroute.fyi",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/v1/sanctions/search": {
+      "get": {
+        "summary": "Search Sanctions",
+        "description": "Full-text search across the EU Consolidated Sanctions List. Returns matching individuals, entities and vessels with full details including aliases, addresses, passport numbers and regulation references.",
+        "operationId": "searchSanctions",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Name, alias, or keyword to search for (e.g. company name, person name)",
+            "schema": {
+              "type": "string",
+              "example": "Gazprom"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Filter by subject type",
+            "schema": {
+              "type": "string",
+              "enum": ["person", "entity", "ship"],
+              "example": "entity"
+            }
+          },
+          {
+            "name": "maxResults",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of results to return (default: 50, max: 200)",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 200,
+              "example": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": { "type": "integer", "example": 3 },
+                    "query": { "type": "string", "example": "Gazprom" },
+                    "listDate": { "type": "string", "format": "date-time" },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "subjectType": { "type": "string", "enum": ["person", "entity", "ship"] },
+                          "names": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "wholeName": { "type": "string" }
+                              }
+                            }
+                          },
+                          "addresses": { "type": "array", "items": { "type": "string" } },
+                          "programme": { "type": "string", "example": "RUS" },
+                          "regulation": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          }
+        },
+        "security": [{ "ApiKeyAuth": [] }]
+      }
+    },
+    "/v1/sanctions/check": {
+      "get": {
+        "summary": "Quick Sanctions Check",
+        "description": "Fast yes/no compliance check. Returns a boolean 'sanctioned' flag plus any matches. Ideal for automated onboarding flows and real-time transaction screening.",
+        "operationId": "checkSanctions",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "Name of the person or company to check",
+            "schema": {
+              "type": "string",
+              "example": "Vladimir Putin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compliance check result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sanctioned": { "type": "boolean", "example": true },
+                    "query": { "type": "string" },
+                    "checkedAt": { "type": "string", "format": "date-time" },
+                    "listDate": { "type": "string", "format": "date-time" },
+                    "matches": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Missing required parameter" },
+          "401": { "description": "Invalid or missing API key" }
+        },
+        "security": [{ "ApiKeyAuth": [] }]
+      }
+    },
+    "/v1/sanctions/status": {
+      "get": {
+        "summary": "List Status",
+        "description": "Returns metadata about the currently loaded sanctions list — last update date, total entry count, and data source info.",
+        "operationId": "sanctionsStatus",
+        "responses": {
+          "200": {
+            "description": "Sanctions list status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "loaded": { "type": "boolean" },
+                    "totalEntries": { "type": "integer" },
+                    "listDate": { "type": "string", "format": "date-time" },
+                    "lastRefresh": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid or missing API key" }
+        },
+        "security": [{ "ApiKeyAuth": [] }]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  }
+}

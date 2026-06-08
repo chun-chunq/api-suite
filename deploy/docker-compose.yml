@@ -1,0 +1,934 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  MASTER docker-compose — all APIs on one Hetzner VPS
+#  Ports:
+#    8080  insolvency-api   (German insolvency register scraper)
+#    8081  zvg-api          (German foreclosure auctions scraper)
+#    8082  ted-api          (EU TED procurement — REST wrapper, no Chrome)
+#    8083  dpma-api         (German trademark register scraper)
+#    8084  sanctions-api    (EU consolidated sanctions list — pure Go, no Chrome)
+#
+#  Set secrets in .env (copy from .env.template, never commit .env)
+#  Start:  docker compose up -d
+#  Stop:   docker compose down
+#  Logs:   docker compose logs -f [service]
+# ══════════════════════════════════════════════════════════════════════════════
+
+services:
+
+  # ── 1. Insolvency API ────────────────────────────────────────────────────────
+  insolvency-api:
+    build:
+      context: ../insolvency-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      REDIS_ADDR: "insolvency-redis:6379"
+      API_KEYS: "${API_KEYS}"
+      RATE_LIMIT_MAX: "60"
+      RATE_LIMIT_WINDOW: "1h"
+      SEARCH_CACHE_TTL: "1h"
+      RECORD_CACHE_TTL: "24h"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      CHROME_BIN: "/usr/bin/chromium"
+      MAX_BROWSERS: "${MAX_BROWSERS:-2}"
+      MAX_QUEUE_DEPTH: "${MAX_QUEUE_DEPTH:-20}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      BANDWIDTH_LIMIT_GB: "${BANDWIDTH_LIMIT_GB:-15}"
+      WORKER_SECRET: "${WORKER_SECRET}"
+      WORKER_URLS: "${INSOLVENCY_WORKER_URLS:-}"
+      GOGC: "50"
+      GOMEMLIMIT: "256MiB"
+    depends_on:
+      insolvency-redis:
+        condition: service_healthy
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    mem_limit: 512m
+    mem_reservation: 128m
+
+  insolvency-redis:
+    image: redis:7-alpine
+    command: >
+      redis-server --appendonly yes --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+      - insolvency-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 80m
+
+  # ── 2. ZVG API ───────────────────────────────────────────────────────────────
+  browserless:
+    image: browserless/chrome:latest
+    environment:
+      MAX_CONCURRENT_SESSIONS: "3"
+      MAX_QUEUE_LENGTH: "10"
+      TOKEN: "${BROWSERLESS_TOKEN:-insecure-default}"
+      EXIT_ON_HEALTH_FAILURE: "true"
+      PREBOOT_CHROME: "true"
+    restart: unless-stopped
+    mem_limit: 1g
+    mem_reservation: 256m
+
+  zvg-api:
+    build:
+      context: ../zvg-api
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      PORT: "8080"
+      REDIS_ADDR: "zvg-redis:6379"
+      API_KEYS: "${API_KEYS}"
+      RATE_LIMIT_MAX: "60"
+      RATE_LIMIT_WINDOW: "1h"
+      CACHE_TTL: "1h"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      BROWSERLESS_URL: "ws://browserless:3000"
+      BROWSERLESS_TOKEN: "${BROWSERLESS_TOKEN:-insecure-default}"
+      MAX_BROWSERS: "${MAX_BROWSERS:-2}"
+      MAX_QUEUE_DEPTH: "${MAX_QUEUE_DEPTH:-20}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      BANDWIDTH_LIMIT_GB: "${BANDWIDTH_LIMIT_GB:-15}"
+      WORKER_SECRET: "${WORKER_SECRET}"
+      WORKER_URLS: "${ZVG_WORKER_URLS:-}"
+      GOGC: "50"
+      GOMEMLIMIT: "128MiB"
+    depends_on:
+      - browserless
+      - zvg-redis
+    restart: unless-stopped
+    mem_limit: 256m
+    mem_reservation: 64m
+
+  zvg-redis:
+    image: redis:7-alpine
+    command: >
+      redis-server --appendonly yes --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+      - zvg-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 80m
+
+  # ── 3. TED EU Procurement API ─────────────────────────────────────────────────
+  ted-api:
+    build:
+      context: ../ted-api
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      PORT: "8082"
+      REDIS_ADDR: "ted-redis:6379"
+      API_KEYS: "${API_KEYS}"
+      RATE_LIMIT_MAX: "100"
+      RATE_LIMIT_WINDOW: "1h"
+      CACHE_TTL: "6h"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      TED_API_KEY: "${TED_API_KEY:-}"
+      GOGC: "20"
+      GOMEMLIMIT: "128MiB"
+    depends_on:
+      ted-redis:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 256m
+    mem_reservation: 64m
+
+  ted-redis:
+    image: redis:7-alpine
+    command: >
+      redis-server --appendonly yes --maxmemory 32mb --maxmemory-policy allkeys-lru
+    volumes:
+      - ted-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 48m
+
+  # ── 4. DPMA Trademark API ─────────────────────────────────────────────────────
+  dpma-api:
+    build:
+      context: ../dpma-api
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      PORT: "8083"
+      REDIS_ADDR: "dpma-redis:6379"
+      API_KEYS: "${API_KEYS}"
+      RATE_LIMIT_MAX: "30"
+      RATE_LIMIT_WINDOW: "1h"
+      CACHE_TTL: "24h"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      CHROME_BIN: "/usr/bin/chromium"
+      MAX_BROWSERS: "${MAX_BROWSERS:-2}"
+      MAX_QUEUE_DEPTH: "${MAX_QUEUE_DEPTH:-20}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      BANDWIDTH_LIMIT_GB: "${BANDWIDTH_LIMIT_GB:-15}"
+      WORKER_SECRET: "${WORKER_SECRET}"
+      WORKER_URLS: "${DPMA_WORKER_URLS:-}"
+      GOGC: "50"
+      GOMEMLIMIT: "256MiB"
+    depends_on:
+      dpma-redis:
+        condition: service_healthy
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    mem_limit: 512m
+    mem_reservation: 128m
+
+  dpma-redis:
+    image: redis:7-alpine
+    command: >
+      redis-server --appendonly yes --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+      - dpma-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 80m
+
+  # ── 5. EU Sanctions API ───────────────────────────────────────────────────────
+  sanctions-api:
+    build:
+      context: ../sanctions-api
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      PORT: "8084"
+      API_KEYS: "${API_KEYS}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      RATE_LIMIT_MAX: "200"
+      RATE_LIMIT_WINDOW: "1h"
+      REFRESH_INTERVAL: "6h"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMEMLIMIT: "128MiB"
+      GOGC: "20"
+    restart: unless-stopped
+    # No Redis, no Chrome — pure Go binary
+    mem_limit: 256m
+    mem_reservation: 64m
+
+  # ── 6. EU Safety Gate / RAPEX Recalls API ────────────────────────────────────
+  safety-api:
+    build:
+      context: ../safety-api
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      PORT: "8085"
+      API_KEYS: "${API_KEYS}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      RATE_LIMIT_MAX: "300"
+      RATE_LIMIT_WINDOW: "1h"
+      REFRESH_INTERVAL: "24h"      # EU publishes weekly — daily check is enough
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMEMLIMIT: "128MiB"
+      GOGC: "20"
+    restart: unless-stopped
+    # No Redis, no Chrome — pure Go, downloads EU XML on start
+    mem_limit: 256m
+    mem_reservation: 64m
+
+  # ── 7. Swiss Zefix Company API ────────────────────────────────────────────────
+  zefix-api:
+    build:
+      context: ../zefix-api
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    environment:
+      PORT: "8086"
+      REDIS_ADDR: "zefix-redis:6379"
+      API_KEYS: "${API_KEYS}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      RATE_LIMIT_MAX: "120"
+      RATE_LIMIT_WINDOW: "1h"
+      CACHE_TTL: "12h"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMEMLIMIT: "128MiB"
+      GOGC: "20"
+    depends_on:
+      zefix-redis:
+        condition: service_healthy
+    restart: unless-stopped
+    # No Chrome — wraps official Zefix REST API
+    mem_limit: 256m
+    mem_reservation: 64m
+
+  zefix-redis:
+    image: redis:7-alpine
+    command: >
+      redis-server --appendonly yes --maxmemory 32mb --maxmemory-policy allkeys-lru
+    volumes:
+      - zefix-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 48m
+
+  # ── 8. BaFin Licensed Institutions API ───────────────────────────────────────
+  bafin-api:
+    build:
+      context: ../bafin-api
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
+    environment:
+      PORT: "8087"
+      REDIS_ADDR: "bafin-redis:6379"
+      API_KEYS: "${API_KEYS}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      RATE_LIMIT_MAX: "30"
+      RATE_LIMIT_WINDOW: "1h"
+      CACHE_TTL: "24h"             # BaFin license data is very stable
+      MAX_BROWSERS: "${MAX_BROWSERS:-2}"
+      MAX_QUEUE_DEPTH: "${MAX_QUEUE_DEPTH:-20}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOGC: "50"
+      GOMEMLIMIT: "256MiB"
+    depends_on:
+      bafin-redis:
+        condition: service_healthy
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    mem_limit: 512m
+    mem_reservation: 128m
+
+  bafin-redis:
+    image: redis:7-alpine
+    command: >
+      redis-server --appendonly yes --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+      - bafin-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 80m
+
+  # ── 10. GLEIF LEI API ─────────────────────────────────────────────────────────
+  gleif-api:
+    build:
+      context: ../gleif-api
+      dockerfile: Dockerfile
+    ports:
+      - "8089:8089"
+    environment:
+      PORT: "8089"
+      API_KEYS: "${API_KEYS}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      RATE_LIMIT_MAX: "200"
+      RATE_LIMIT_WINDOW: "1h"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMEMLIMIT: "128MiB"
+      GOGC: "20"
+    restart: unless-stopped
+    # No Redis, no Chrome — pure REST wrapper of official GLEIF API
+    mem_limit: 256m
+    mem_reservation: 64m
+
+  # ── 11. CORDIS EU Grants API ──────────────────────────────────────────────────
+  cordis-api:
+    build:
+      context: ../cordis-api
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    environment:
+      PORT: "8090"
+      API_KEYS: "${API_KEYS}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      RATE_LIMIT_MAX: "200"
+      RATE_LIMIT_WINDOW: "1h"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMEMLIMIT: "128MiB"
+      GOGC: "20"
+    restart: unless-stopped
+    # No Redis, no Chrome — wraps official CORDIS REST API
+    mem_limit: 256m
+    mem_reservation: 64m
+
+  # ── 12. Health Monitor + Alerter ─────────────────────────────────────────────
+  monitor:
+    build:
+      context: ../monitor
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8091"
+    environment:
+      PORT: "8091"
+      CHECK_INTERVAL_SEC: "${CHECK_INTERVAL_SEC:-300}"   # check every 5 minutes
+      # ── Telegram (primary — set up in 2 min, see ALERTING.md) ──
+      TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN:-}"
+      TELEGRAM_CHAT_ID:   "${TELEGRAM_CHAT_ID:-}"
+      # ── Discord webhook (optional) ──
+      DISCORD_WEBHOOK_URL: "${DISCORD_WEBHOOK_URL:-}"
+      # ── Email / SMTP (optional) ──
+      SMTP_HOST:      "${SMTP_HOST:-}"
+      SMTP_PORT:      "${SMTP_PORT:-587}"
+      SMTP_USER:      "${SMTP_USER:-}"
+      SMTP_PASSWORD:  "${SMTP_PASSWORD:-}"
+      ALERT_EMAIL_TO: "${ALERT_EMAIL_TO:-}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+    # Must reach other services on localhost
+    network_mode: host
+    restart: unless-stopped
+    mem_limit: 64m
+
+  # ── 14. Handelsregister API (German Commercial Register) ─────────────────────
+  handelsregister-api:
+    build:
+      context: ../handelsregister-api
+      dockerfile: Dockerfile
+    ports:
+      - "8092:8092"
+    environment:
+      PORT: "8092"
+      REDIS_ADDR: "handelsregister-redis:6379"
+      API_KEYS: "${API_KEYS}"
+      RATE_LIMIT_PER_MINUTE: "5"
+      CACHE_TTL: "24h"
+      SCRAPE_TIMEOUT: "60s"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOGC: "50"
+      GOMEMLIMIT: "256MiB"
+    depends_on:
+      handelsregister-redis:
+        condition: service_healthy
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    mem_limit: 512m
+    mem_reservation: 128m
+
+  handelsregister-redis:
+    image: redis:7-alpine
+    command: >
+      redis-server --appendonly yes --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+      - handelsregister-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 80m
+
+  # ── 15. EUIPO / TMview EU Trademark API ──────────────────────────────────────
+  euipo-api:
+    build:
+      context: ../euipo-api
+      dockerfile: Dockerfile
+    ports:
+      - "8093:8093"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 16. French Company Register (SIRENE) API ─────────────────────────────────
+  french-company-api:
+    build:
+      context: ../french-company-api
+      dockerfile: Dockerfile
+    ports:
+      - "8094:8094"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 17. UK Companies House API ───────────────────────────────────────────────
+  uk-company-api:
+    build:
+      context: ../uk-company-api
+      dockerfile: Dockerfile
+    ports:
+      - "8095:8095"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      COMPANIES_HOUSE_API_KEY: "${COMPANIES_HOUSE_API_KEY}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 18. Research Publications API (OpenAlex) ─────────────────────────────────
+  research-api:
+    build:
+      context: ../research-api
+      dockerfile: Dockerfile
+    ports:
+      - "8096:8096"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      CONTACT_EMAIL: "${CONTACT_EMAIL:-}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 19. GDPR Enforcement Tracker API ─────────────────────────────────────────
+  gdpr-api:
+    build:
+      context: ../gdpr-api
+      dockerfile: Dockerfile
+    ports:
+      - "8097:8097"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMEMLIMIT: "256MiB"
+      GOGC: "20"
+    restart: unless-stopped
+    mem_limit: 512m
+    mem_reservation: 128m
+
+  # ── 20. SEC EDGAR (US Public Companies) API ──────────────────────────────────
+  sec-api:
+    build:
+      context: ../sec-api
+      dockerfile: Dockerfile
+    ports:
+      - "8098:8098"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      CONTACT_EMAIL: "${CONTACT_EMAIL:-}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 21. Open Food Facts / Nutrition API ──────────────────────────────────────
+  food-api:
+    build:
+      context: ../food-api
+      dockerfile: Dockerfile
+    ports:
+      - "8099:8099"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 22. Aviation / Live Flight Tracking API ──────────────────────────────────
+  aviation-api:
+    build:
+      context: ../aviation-api
+      dockerfile: Dockerfile
+    ports:
+      - "8100:8100"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      OPENSKY_USERNAME: "${OPENSKY_USERNAME:-}"
+      OPENSKY_PASSWORD: "${OPENSKY_PASSWORD:-}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 23. Open-Meteo Weather API ───────────────────────────────────────────────
+  weather-api:
+    build:
+      context: ../weather-api
+      dockerfile: Dockerfile
+    ports:
+      - "8101:8101"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"        # single-threaded → less idle CPU & goroutine overhead
+      GOGC: "20"             # GC at 20% heap growth → small idle heap
+      GOMEMLIMIT: "52MiB"    # hard cap, leaves headroom below mem_limit
+      GODEBUG: "madvdontneed=1"  # return freed pages to OS immediately
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 24. ECB Currency Exchange Rates API ──────────────────────────────────────
+  currency-api:
+    build:
+      context: ../currency-api
+      dockerfile: Dockerfile
+    ports:
+      - "8102:8102"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 25. OpenFDA Drug API ──────────────────────────────────────────────────────
+  openfda-api:
+    build:
+      context: ../openfda-api
+      dockerfile: Dockerfile
+    ports:
+      - "8103:8103"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      OPENFDA_API_KEY: "${OPENFDA_API_KEY:-}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 26. Wikidata Entity API ───────────────────────────────────────────────────
+  wikidata-api:
+    build:
+      context: ../wikidata-api
+      dockerfile: Dockerfile
+    ports:
+      - "8104:8104"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      CONTACT_EMAIL: "${CONTACT_EMAIL:-}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 27. CoinGecko Cryptocurrency API ─────────────────────────────────────────
+  crypto-api:
+    build:
+      context: ../crypto-api
+      dockerfile: Dockerfile
+    ports:
+      - "8105:8105"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      COINGECKO_API_KEY: "${COINGECKO_API_KEY:-}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 29. IP Geolocation API ───────────────────────────────────────────────────
+  ipgeo-api:
+    build:
+      context: ../ipgeo-api
+      dockerfile: Dockerfile
+    ports:
+      - "8107:8107"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      IPAPI_KEY: "${IPAPI_KEY:-}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 30. VAT Validation API ───────────────────────────────────────────────────
+  vat-api:
+    build:
+      context: ../vat-api
+      dockerfile: Dockerfile
+    ports:
+      - "8108:8108"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 31. REST Countries API ───────────────────────────────────────────────────
+  countries-api:
+    build:
+      context: ../countries-api
+      dockerfile: Dockerfile
+    ports:
+      - "8109:8109"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 32. PubChem Chemical Compound API ────────────────────────────────────────
+  pubchem-api:
+    build:
+      context: ../pubchem-api
+      dockerfile: Dockerfile
+    ports:
+      - "8110:8110"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 33. NASA Open Data API ───────────────────────────────────────────────────
+  nasa-api:
+    build:
+      context: ../nasa-api
+      dockerfile: Dockerfile
+    ports:
+      - "8111:8111"
+    environment:
+      NASA_API_KEY: "${NASA_API_KEY:-}"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 35. Air Quality API ───────────────────────────────────────────────────────
+  airquality-api:
+    build:
+      context: ../airquality-api
+      dockerfile: Dockerfile
+    ports:
+      - "8113:8113"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 36. Exchange Rate History API ────────────────────────────────────────────
+  exchangerate-api:
+    build:
+      context: ../exchangerate-api
+      dockerfile: Dockerfile
+    ports:
+      - "8114:8114"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 37. GBIF Biodiversity API ────────────────────────────────────────────────
+  gbif-api:
+    build:
+      context: ../gbif-api
+      dockerfile: Dockerfile
+    ports:
+      - "8115:8115"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 41. Name Prediction (Agify/Genderize/Nationalize) ────────────────────────
+  namepredict-api:
+    build:
+      context: ../namepredict-api
+      dockerfile: Dockerfile
+    ports:
+      - "8119:8119"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 42. World Bank Open Data API ─────────────────────────────────────────────
+  worldbank-api:
+    build:
+      context: ../worldbank-api
+      dockerfile: Dockerfile
+    ports:
+      - "8120:8120"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 43. ClinicalTrials.gov API ───────────────────────────────────────────────
+  clinicaltrials-api:
+    build:
+      context: ../clinicaltrials-api
+      dockerfile: Dockerfile
+    ports:
+      - "8121:8121"
+    environment:
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "1"
+      GOGC: "20"
+      GOMEMLIMIT: "52MiB"
+      GODEBUG: "madvdontneed=1"
+    restart: unless-stopped
+    mem_limit: 64m
+    mem_reservation: 12m
+
+  # ── 44. API Gateway (circuit breaker + auth + rate limiting) ─────────────────
+  gateway:
+    build:
+      context: ../gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: "8000"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      API_KEYS: "${API_KEYS:-}"
+      ALLOW_ANONYMOUS: "${ALLOW_ANONYMOUS:-true}"
+      RAPIDAPI_PROXY_SECRET: "${RAPIDAPI_PROXY_SECRET:-}"
+      HEALTH_POLL_INTERVAL: "60s"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      GOMAXPROCS: "2"
+      GOGC: "30"
+      GOMEMLIMIT: "128MiB"
+    network_mode: host
+    restart: unless-stopped
+    mem_limit: 256m
+    mem_reservation: 32m
+
+  # ── 45. Analytics Dashboard ───────────────────────────────────────────────────
+  dashboard:
+    build:
+      context: ../dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8088"
+    environment:
+      PORT: "8088"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      DASHBOARD_PASSWORD: "${DASHBOARD_PASSWORD:-changeme}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+    # Dashboard talks to other services on the host network
+    network_mode: host
+    restart: unless-stopped
+    mem_limit: 64m
+
+volumes:
+  insolvency-redis-data:
+  zvg-redis-data:
+  ted-redis-data:
+  dpma-redis-data:
+  zefix-redis-data:
+  bafin-redis-data:
+  handelsregister-redis-data:

@@ -1,0 +1,13 @@
+{
+  "name": "apify-german-insolvency",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Apify Actor for the German Insolvency Register API",
+  "main": "src/main.js",
+  "dependencies": {
+    "apify": "^3.2.0"
+  },
+  "scripts": {
+    "start": "node src/main.js"
+  }
+}

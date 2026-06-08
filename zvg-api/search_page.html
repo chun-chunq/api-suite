@@ -1,0 +1,490 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de"><head>
+        <title>Justizportal - Verfahren</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <meta content="Justizportal des Bundes und der L�nder" name="DC.Description">
+        <meta content="Referat �ffentlichkeitsarbeit" name="DC.Author">
+        <meta content="Justizportal des Bundes und der L�nder" name="DC.Page-topic">
+	
+	<meta content="index,follow" name="Robots">
+<meta content="Zwangsversteigerungen,Zwangsversteigerungstermine,Zwangsversteigerungsbekanntmachungen, Amtliche Bekanntmachungen,Immobilienversteigerungen,Versteigerungen" name="keywords">
+
+        <link href="mailto:redaktion@justiz.de" title="Mail" rel="author">
+        <link href="https://justiz.de/Uebersicht.php" title="Inhaltsverzeichnis" rel="contents">
+        <link href="https://justiz.de/index.php" title="Startseite" rel="start">
+        <link href="https://justiz.de/Impressum.php" title="Impressum" rel="copyright">
+        <link href="https://justiz.de/index.php#suchzeile" title="Suchen" rel="search">
+<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+
+<link title="Basis-Stylesheet" href="images/basis.css" type="text/css" rel="stylesheet">
+
+    <script>
+var BundeslandArray=new Array(16);
+var BundeslandArrayId=new Array(16);
+
+BundeslandArray['0']=new Array('-- Alle Amtsgerichte --');
+BundeslandArray['bw']=new Array('Biberach','Calw','Crailsheim','Karlsruhe','Kehl','Lahr','Mannheim','Offenburg','Ravensburg','Reutlingen','Schwäbisch Hall','Tettnang','Tuttlingen','Wolfach ');
+
+BundeslandArrayId['bw']=new Array('B2402','B2701','B2103','B1405','B1802','B1803','B1601','B1805','B2404','B2705','B2308','B2407','B2506','B1806');
+
+BundeslandArray['by']=new Array('Amberg','Ansbach','Aschaffenburg','Augsburg','Bamberg','Bayreuth','Coburg','Deggendorf','Fürth','Hof','Ingolstadt','Kaufbeuren','Kempten (Allgäu)','Landshut','Memmingen','Mühldorf','München','Neu-Ulm','Nördlingen','Nürnberg','Passau','Regensburg','Rosenheim','Schweinfurt','Straubing','Traunstein','Weiden i.d.Opf.','Weilheim i. OB','Weißenburg','Wolfratshausen','Würzburg ');
+
+BundeslandArrayId['by']=new Array('D3101','D3201','D4102','D2102','D4201','D4301','D4401','D2201','D3304','D4501','D5701','D2303','D2304','D2404','D2505','D2908','D2601','D2507','D2108','D3310','D2803','D3410','D2909','D4608','D3413','D2910','D3508','D2713','D3208','D2714','D4708');
+
+BundeslandArray['be']=new Array('Charlottenburg','Köpenick','Kreuzberg','Lichtenberg','Mitte','Neukölln','Pankow','Schöneberg','Spandau','Tiergarten','Wedding ');
+
+BundeslandArrayId['be']=new Array('F1103','F1110','F1108','F1111','F1112','F1109','F1105','F1106','F1104','F1101','F1102');
+
+BundeslandArray['br']=new Array('Bad Liebenwerda','Cottbus','Cottbus Zweigstelle Guben','Frankfurt (Oder)','Königs Wusterhausen','Luckenwalde','Lübben','Neuruppin','Potsdam','Senftenberg','Strausberg ');
+
+BundeslandArrayId['br']=new Array('G1101','G1103','G1107','G1207','G1305','G1307','G1110','G1309','G1312','G1111','G1212');
+
+BundeslandArray['hb']=new Array('Bremen','Bremen-Blumenthal','Bremerhaven ');
+
+BundeslandArrayId['hb']=new Array('H1101','H1103','H1102');
+
+BundeslandArray['hh']=new Array(' ');
+
+BundeslandArrayId['hh']=new Array('');
+
+BundeslandArray['he']=new Array('Alsfeld','Bad Hersfeld','Bad Homburg v. d. Höhe','Bad Schwalbach','Bensheim','Biedenkopf','Büdingen','Darmstadt','Dieburg','Dillenburg','Dillenburg Zweigstelle Herborn','Eschwege','Frankenberg (Eder)','Frankfurt am Main','Friedberg (Hessen)','Fritzlar','Fürth','Fulda','Gelnhausen','Gießen','Groß-Gerau','Hanau','Hünfeld','Idstein','Kassel','Kassel Zweigstelle Hofgeismar','Kirchhain','Königstein im Taunus','Korbach','Lampertheim','Langen (Hessen)','Limburg a. d. Lahn','Marburg','Melsungen','Michelstadt','Offenbach am Main','Rüdesheim am Rhein','Rüsselsheim','Schwalmstadt','Seligenstadt','Weilburg','Wetzlar','Wiesbaden ');
+
+BundeslandArrayId['he']=new Array('M1401','M1305','M1202','M1905','M1102','M1801','M1402','M1103','M1104','M1702','M1705','M1602','M1803','M1201','M1405','M1603','M1105','M1301','M1501','M1406','M1106','M1502','M1307','M1903','M1607','M1605','M1807','M1203','M1608','M1111','M1112','M1706','M1809','M1609','M1113','M1114','M1904','M1107','M1812','M1117','M1709','M1710','M1906');
+
+BundeslandArray['mv']=new Array(' ');
+
+BundeslandArrayId['mv']=new Array('');
+
+BundeslandArray['ni']=new Array('Achim','Alfeld','Aurich','Bad Gandersheim','Bad Iburg','Bersenbrück','Brake','Braunschweig','Bremervörde','Bückeburg','Burgdorf','Burgwedel','Buxtehude','Celle','Clausthal-Zellerfeld','Cloppenburg','Cuxhaven','Dannenberg','Delmenhorst','Diepholz','Duderstadt','Einbeck','Elze','Emden','Geestland','Gifhorn','Göttingen','Goslar','Hameln','Hann.-Münden','Hannover','Helmstedt','Herzberg am Harz','Hildesheim','Holzminden','Jever','Leer','Lehrte','Lingen','Lüneburg','Meppen','Neustadt','Nienburg','Norden','Nordenham','Nordhorn','Northeim','Oldenburg','Osnabrück','Osterholz-Scharmbeck','Osterode am Harz','Otterndorf','Papenburg','Peine','Rinteln','Rotenburg (Wümme)','Salzgitter','Seesen','Soltau','Springe','Stade','Stadthagen','Stolzenau','Sulingen','Syke','Tostedt','Uelzen ','Varel','Vechta','Verden','Walsrode','Wennigsen','Westerstede','Wildeshausen','Wilhelmshaven','Winsen (Luhe)','Wittmund','Wolfenbüttel','Wolfsburg','Zeven ');
+
+BundeslandArrayId['ni']=new Array('P2701','P2401','P3101','P1101','P3307','P3302','P3201','P1103','P2601','P2101','P2403','P2303','P2602','P2503','P1116','P3202','P2603','P2504','P3204','P2705','P1202','P1203','P2404','P3102','P2608','P2407','P1204','P1104','P2304','P1205','P2305','P1105','P1206','P2408','P2409','P3207','P3104','P2410','P3308','P2507','P3310','P2306','P2708','P3105','P3209','P3312','P1208','P3210','P3313','P2709','P1209','P2611','P3314','P2411','P2104','P2710','P1108','P1111','P2509','P2307','P2612','P2106','P2711','P2712','P2713','P2613','P2510','P3211','P3212','P2715','P2716','P2308','P3213','P3214','P3215','P2511','P3107','P1115','P2413','P2614');
+
+BundeslandArray['nw']=new Array('Aachen','Ahaus','Ahlen','Altena','Arnsberg','Bad Berleburg','Bad Oeynhausen','Beckum','Bergheim','Bergisch Gladbach','Bielefeld','Blomberg','Bocholt','Bochum','Bonn','Borken','Bottrop','Brakel','Brilon','Brühl','Bünde','Castrop-Rauxel','Coesfeld','Detmold','Dinslaken','Dorsten','Dortmund','Dülmen','Düren','Düsseldorf','Duisburg','Erkelenz','Eschweiler','Essen','Euskirchen','Geilenkirchen','Geldern','Gelsenkirchen','Gladbeck','Grevenbroich','Gütersloh','Gummersbach','Hagen','Halle','Hamm','Hattingen','Heinsberg','Herford','Herne','Herne-Wanne (Herne)','Höxter','Ibbenbüren','Iserlohn','Jülich','Kamen','Kempen','Kerpen','Kleve','Köln','Königswinter','Krefeld','Langenfeld','Lemgo','Lennestadt','Leverkusen','Lippstadt','Lübbecke','Lüdenscheid','Lüdinghausen','Lünen','Marl','Medebach','Meinerzhagen','Menden','Meschede','Mettmann','Minden','Mönchengladbach','Mönchengladbach-Rheydt','Moers','Monschau','Mülheim an der Ruhr','Münster','Nettetal','Neuss','Oberhausen','Olpe','Paderborn','Plettenberg','Rahden','Ratingen','Recklinghausen','Remscheid','Rheda-Wiedenbrück','Rheinbach','Rheinberg','Rheine','Schleiden','Schwelm','Schwerte','Siegburg','Siegen','Soest','Solingen','Steinfurt','Tecklenburg','Unna','Velbert','Viersen','Waldbröl','Warburg','Warendorf','Warstein','Werl','Wesel','Wipperfürth','Witten','Wuppertal ');
+
+BundeslandArrayId['nw']=new Array('R3101','R2701','R2702','R2601','R1901','R2902','R2108','R2703','R3302','R3301','R2101','R2302','R2704','R2201','R3201','R2705','R2501','R2802','R1904','R3303','R2102','R2401','R2707','R2303','R1201','R2502','R2402','R2708','R3103','R1101','R1202','R1502','R3104','R2503','R3203','R3105','R1302','R2507','R2509','R1503','R2103','R3304','R2602','R2104','R2404','R2510','R3107','R2105','R2203','R2205','R2807','R2711','R2604','R3108','R2405','R1401','R3305','R1304','R3306','R3205','R1402','R1105','R2307','R2904','R3311','R2808','R2106','R2605','R2712','R2406','R2511','R1907','R2606','R1908','R1909','R1602','R2107','R1504','R1505','R1305','R3109','R1205','R2713','R1404','R1102','R1206','R2908','R2809','R2607','R2110','R1104','R2204','R1603','R2113','R3207','R1306','R2715','R3106','R2608','R2609','R3208','R2909','R1911','R1605','R2706','R2716','R2407','R1606','R1506','R3209','R2813','R2718','R1912','R1913','R1208','R3309','R2207','R1608');
+
+BundeslandArray['rp']=new Array('Altenkirchen','Alzey','Andernach','Bad Dürkheim','Bad Kreuznach','Bad Neuenahr-Ahrweiler','Bernkastel-Kues','Betzdorf','Bingen am Rhein','Bitburg','Cochem','Daun','Diez','Frankenthal (Pfalz)','Grünstadt','Idar-Oberstein','Kaiserslautern','Koblenz','Kusel','Lahnstein','Landau in der Pfalz','Landstuhl','Linz am Rhein','Ludwigshafen am Rhein','Mainz','Mayen','Montabaur','Neustadt an der Weinstraße','Neuwied','Pirmasens','Rockenhausen','Sinzig','Speyer','St. Goar','Trier','Westerburg','Wittlich','Worms','Zweibrücken ');
+
+BundeslandArrayId['rp']=new Array('T2202','T2301','T2203','T3101','T2101','T2204','T2401','T2205','T2302','T2402','T2207','T2403','T2208','T3102','T3103','T2103','T3201','T2210','T3203','T2211','T3304','T3401','T2212','T3104','T2304','T2213','T2214','T3105','T2215','T3402','T3205','T2218','T3106','T2216','T2407','T2219','T2408','T2307','T3403');
+
+BundeslandArray['sl']=new Array('Homburg','Lebach','Merzig','Neunkirchen','Ottweiler','Saarbrücken','Saarlouis','St. Ingbert','St. Wendel','Völklingen ');
+
+BundeslandArrayId['sl']=new Array('V1102','V1103','V1104','V1105','V1107','V1109','V1110','V1111','V1112','V1115');
+
+BundeslandArray['sn']=new Array('Bautzen','Chemnitz','Dresden','Görlitz','Leipzig','Zwickau ');
+
+BundeslandArrayId['sn']=new Array('U1101','U1206','U1104','U1107','U1308','U1222');
+
+BundeslandArray['st']=new Array('Aschersleben','Bernburg','Bitterfeld-Wolfen','Burg','Dessau-Roßlau','Eisleben','Gardelegen','Halberstadt','Haldensleben','Halle (Saale)','Köthen','Magdeburg','Merseburg','Naumburg','Oschersleben','Quedlinburg','Salzwedel','Sangerhausen','Schönebeck','Stendal','Weißenfels','Wernigerode','Wittenberg','Zeitz','Zerbst ');
+
+BundeslandArrayId['st']=new Array('W1101','W1102','W1103','W1201','W1104','W1105','W1202','W1204','W1205','W1109','W1113','W1209','W1114','W1115','W1210','W1117','W1212','W1120','W1213','W1215','W1121','W1218','W1122','W1123','W1220');
+
+BundeslandArray['sh']=new Array('Elmshorn','Norderstedt ');
+
+BundeslandArrayId['sh']=new Array('X1312','X1526');
+
+BundeslandArray['th']=new Array('Altenburg','Arnstadt','Eisenach','Erfurt','Gera','Gotha','Jena','Meiningen','Mühlhausen','Nordhausen','Rudolstadt','Sonneberg','Suhl','Weimar ');
+
+BundeslandArrayId['th']=new Array('Y1201','Y1102','Y1105','Y1106','Y1203','Y1108','Y1206','Y1304','Y1110','Y1111','Y1210','Y1307','Y1308','Y1114');
+
+
+function init(){
+//document.globe.Bundesland.selectedIndex=0;
+//document.globe.Gericht.selectedIndex=0;
+}
+
+function updateAmtsgericht(l)
+    {
+      document.globe.ger_id.options.length=1;
+//alert("ok");
+	var arrV=BundeslandArray[l];
+	var arrId=BundeslandArrayId[l];
+        for (var i=0;i<arrV.length;i++) {
+
+//           if (arr[i] == '' && x==1)
+                     document.globe.ger_id.options[document.globe.ger_id.options.length] = new Option(arrV[i],arrId[i],false,true);
+//                     else Formularkopie.ger_id.options[Formularkopie.ger_id.options.length] = new Option(arr[i],arr[i]);
+     }
+document.globe.ger_id.options[0].selected= true;
+
+}
+
+function checkFormular()
+{
+document.globe.ger_name.value=document.globe.ger_id[document.globe.ger_id.selectedIndex].text;
+        if (document.globe.land_abk.value=='0'){
+                        alert ("Bitte ein Bundesland auswaehlen");
+                        return false;
+                        exit;
+                }
+if( document.globe.vtag.value!='' || document.globe.vmonat.value!='' || document.globe.vjahr.value!='' ) 
+if(!( document.globe.vtag.value!='' && document.globe.vmonat.value!='' && document.globe.vjahr.value!='')) 
+ {
+		 alert ("Bitte 'von' Termin komplett eintragen");
+                 return false;
+}
+/*
+if( document.globe.btag.value!='' || document.globe.bmonat.value!='' || document.globe.bjahr.value!='' )
+if(!( document.globe.btag.value!='' && document.globe.bmonat.value!='' && document.globe.bjahr.value!='' ))
+ {
+                 alert ("Bitte 'bis' Termin komplett eintragen");
+                 return false;
+}
+*/
+
+                //selektiert alle Objekte der obj_arr[], damit diese an php-Script übergeben werden!
+                for(var i=0;i<document.globe.obj_arr.length;i++)
+                                      document.globe.obj_arr.options[i].selected=true;
+
+}
+
+
+</script><script>
+//die Felder werden nach Zahlen, bzw. Buchstaben |berpr|ft.(Keine Umlauete erlaubt)
+//wenn die Ldnge erreicht ist,springt der Kursor automatisch weiter
+function charTest(test,l,y,art)
+{
+        //test - input
+        //l - vorgeschrieben Zeichenanzahl
+        //y - naechstes Feld selektieren
+        //art - buchstabe/zahl
+
+        var pos=test.value.length-1;
+        var char_=test.value.charAt(pos);
+
+	//sonst gibt es Probleme, bei TAB-benutzung
+	if(char_=="")return ;
+
+        switch(art){
+                case "b":
+                        if (("a"<=char_ && char_<="z") || ("A"<=char_ && char_<="Z")){
+                                if(test.value.length==l)test.form.elements[y].focus();
+                        }else{
+                              test.value='';
+                              alert(char_+' ist kein Buchstabe');
+                        }
+                        break;
+                case "z":
+                        if (0<=char_ && char_<=9){
+                                   if(test.value.length==l)test.form.elements[y].focus();
+                        }else{
+                              test.value='';
+                              alert(char_+' ist keine Zahl');
+                        }
+                break;
+        }
+}
+</script><script>
+function terminErgaenzen(test,l)
+{
+        //test - input
+        //l - laenge des feldes
+
+        if(test.value.length==1)test.value="0"+test.value;
+
+        if(l==4 && test.value.length==2) if (50<=test.value)test.value="19"+test.value;
+                 else test.value="20"+test.value;
+
+}
+</script><script>
+//Objekt
+function insertObj(){
+
+ for(var i=0;i<document.getElementById('obj_liste').length;i++)
+	if(document.getElementById('obj_liste').options[i].selected==true)
+{
+
+//document.getElementById('obj_liste').selectedIndex
+
+    name=document.getElementById('obj_liste').options[i].text;
+    val =document.getElementById('obj_liste').options[i].value;
+
+    NeuerEintrag=new Option(name,val,false,true);
+    document.getElementById('obj_arr').options[document.getElementById('obj_arr').length]=NeuerEintrag;
+}
+
+}
+
+function deleteObj(){
+var z=document.getElementById('obj_arr').length;
+ for(var i=0;i<z;i++)
+        if(document.getElementById('obj_arr').options[i].selected==true){
+		document.getElementById('obj_arr').options[i]=null;
+		z--;
+		i--;
+}
+}
+</script></head>
+
+
+
+
+    <body>
+        <!-- Kopfbereich -->
+        <a name="top"></a>
+        <a href="https://justiz.de/" title="Link zur Startseite"><img src="images/justitia.gif" alt="Justitia auf Deutschlandkarte" id="logo" height="132" width="160"></a>
+        <h1 id="kopf">Zwangsversteigerungstermine</h1>
+        <div id="micronavi"><!-- Micronavi -->
+        Sie sind hier:
+            <ul>
+                <li><a href="index.php?button=Termine suchen"><span class="pfeil">&gt;</span>Termine suchen</a></li>            </ul>
+        </div><!-- ende Micronavi -->
+
+
+
+        <!-- Ende Kopfbereich -->
+
+<div id="container"><!-- Container -->
+<div id="navi" class="noprint"> <!-- Navigation linke Seite -->
+            <ul class="hinterlegt">
+		<li><a href="index.php?button=Termine suchen" class="selected">Termine suchen</a></li>
+		
+		 <li><a href="index.php?button=Uebersicht">Übersicht</a></li>
+
+		 <li><a href="index.php?button=Hinweise fuer Bieter">Hinweise für Bieter</a></li>
+
+		 <li><a href="index.php?button=handbuch&amp;sess_clean=1" target="_blanc">Bieter Handbuch</a></li>
+
+            </ul>
+            <ul class="binnennavi">
+                <li><a href="index.php?button=Startseite" title="Startseite">Startseite</a></li>
+                <li><a href="index.php?button=Impressum">Impressum</a></li>
+                <li><a href="https://justiz.de/datenschutz/index.php" target="_blank">Rechtliche Hinweise</a></li>
+    		<li><a href="index.php?button=Kontakt">Kontakt</a></li>
+            </ul>
+                <div id="zusatznavi">
+
+</div>
+
+            <form action="https://justiz.de/suchergebnis/index.php" method="get"><label class="small" for="query">Suche</label><br>
+                <input name="q" id="suchzeile" type="text"><input src="images/lupe.gif" alt="" type="image">
+            </form>
+        </div> <!-- Ende Navigation -->
+
+        <div id="inhalt"><!-- Inhalt -->
+                <p>
+<!-- Inhalt -->
+</p><form name="globe" method="post" action="index.php?button=Suchen" onsubmit="return checkFormular();"> 
+<nobr><h3>Termine suchen
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button type="submit">Suchen</button><button type="reset" onclick="reset_form()">Zurücksetzen</button><br></h3></nobr><p>
+
+<input type="hidden" name="ger_name" id="name=ger_name">
+
+<!-- -->
+</p><table border="0"><tbody><tr><td><b>Sortiert nach:&nbsp;</b></td><td>
+                <select size="1" name="order_by"><option value="2">Termin</option>
+<option value="1">Aktualisierung</option>
+<option value="3">Aktenzeichen</option>
+
+</select></td> </tr>
+</tbody></table>
+
+
+
+<!--Land-->
+<br>
+<table border="0">
+<tbody><tr><td><font color="red">*</font>&nbsp;<b>Land:</b></td></tr>
+<tr><td>
+<select size="1" name="land_abk" onchange="updateAmtsgericht(this.value);" style="width:643px">
+<option value="0">-- Bitte Bundesland auswählen --</option><option value="bw">Baden-Wuerttemberg</option>
+<option value="by">Bayern</option>
+<option value="be">Berlin</option>
+<option value="br">Brandenburg</option>
+<option value="hb">Bremen</option>
+<option value="hh">Hamburg</option>
+<option value="he">Hessen</option>
+<option value="mv">Mecklenburg-Vorpommern</option>
+<option value="ni">Niedersachsen</option>
+<option value="nw">Nordrhein-Westfalen</option>
+<option value="rp">Rheinland-Pfalz</option>
+<option value="sl">Saarland</option>
+<option value="sn">Sachsen</option>
+<option value="st">Sachsen-Anhalt</option>
+<option value="sh">Schleswig-Holstein</option>
+<option value="th">Thüringen</option>
+
+</select></td></tr></tbody></table>
+<br>
+<!--Gericht-->
+<table border="0">
+<tbody><tr><td><b>Gericht:</b></td></tr>
+<tr><td><select size="1" name="ger_id" style="width:643px">
+<option value="0">-- Alle Amtsgerichte --</option>
+</select></td></tr></tbody></table>
+<br>
+<!--Aktenzeichen-->
+<table>
+<tbody><tr><td><b>Aktenzeichen:</b></td></tr>
+<tr><td>
+<input name="az1" id="az1" size="4" maxlength="4" onkeyup="charTest(this,'4','az2','z')" value="" title="Abteilungsnummer">&nbsp;<input name="az2" id="az2" size="2" maxlength="2" onkeyup="charTest(this,'2','az3','b');" value="" title="Buchstabenzusatz">&nbsp;<b>K</b>&nbsp;<input name="az3" id="az3" size="4" maxlength="4" onkeyup="charTest(this,'4','az4','z')" value="" title="laufende Nummer">&nbsp;<b>/</b>&nbsp;<input name="az4" id="az4" size="4" maxlength="4" onkeyup="charTest(this,'4','art','z');" onblur="terminErgaenzen(this,'4');" value="" title="Jahreszahl"></td></tr></tbody></table>
+<br><!--Art der Versteigerung-->
+<table border="0"><tbody><tr><td><b>Art der Versteigerung:</b></td></tr>
+<tr><td><select name="art" id="art" size="1" style="width:643px" onchange="javascript:this.form.elements['gbuch'].focus()">
+
+<option value="">-- Alle Verfahrensarten --</option>
+<option value="-1">Zwangsversteigerung zum Zwecke der Aufhebung der Gemeinschaft</option>
+<option value="0">Versteigerung im Wege der Zwangsvollstreckung</option>
+<option value="1">Zwangsversteigerung auf Antrag des Insolvenzverwalters</option>
+<option value="2">Zwangsversteigerung auf Antrag des Erben</option>
+<option value="3">Zwangsversteigerung von Schiffen, Schiffsbauwerken und Binnenschiffen</option>
+<option value="6">Zwangsversteigerung von Seekabeln</option>
+<option value="4">Zwangsversteigerung von Luftfahrzeugen</option>
+<option value="5">Zwangsversteigerung zum Zwecke der Entziehung des Wohnungseigentums</option>
+<option value="7">Aufgebotsverfahren</option>
+<option value="8">Sonstiges</option>
+</select></td></tr>
+</tbody></table><br>
+<!--Objekt-->
+<table border="0"><tbody><tr><td colspan="3"><b>Objekt:</b></td></tr><tr>
+<td colspan="3"><input name="obj" id="obj" size="50" style="width:300px" value="" title="freie Objektbeschreibung, falls in der Liste nicht vorhanden"></td></tr><tr><td>
+<select name="obj_arr[]" id="obj_arr" size="5" style="width:300px" ondblclick="deleteObj()" ;="" multiple=""></select></td><td>&nbsp;&nbsp;<button style="HEIGHT: 22px;WIDTH: 22px;" onclick="insertObj();return false;">&lt;=</button>&nbsp;&nbsp;
+    <br> &nbsp;&nbsp;<button style="HEIGHT: 22px;WIDTH: 22px;" onclick="deleteObj();return false;">=&gt;</button>&nbsp;&nbsp;</td>
+<td><select id="obj_liste" name="obj_liste" size="5" style="width:300px" ondblclick="insertObj()" ;="" multiple=""><option value="1">Reihenhaus</option>
+<option value="2">Doppelhaushälfte</option>
+<option value="3">Einfamilienhaus</option>
+<option value="19">Zweifamilienhaus</option>
+<option value="4">Mehrfamilienhaus</option>
+<option value="5">Eigentumswohnung (1 bis 2 Zimmer)</option>
+<option value="6">Eigentumswohnung (3 bis 4 Zimmer)</option>
+<option value="7">Eigentumswohnung (ab 5 Zimmer)</option>
+<option value="8">Gewerbeeinheit (z.B. Laden, Büro)</option>
+<option value="13">Wohn-/Geschäftshaus</option>
+<option value="9">Garage</option>
+<option value="10">Kfz-Stellplatz</option>
+<option value="11">Kfz-Stellplatz (Tiefgarage)</option>
+<option value="12">sonstiges Teileigentum (z.B. Keller, Hobbyraum)</option>
+<option value="14">gewerblich genutztes Grundstück</option>
+<option value="15">Baugrundstück</option>
+<option value="16">unbebautes Grundstück</option>
+<option value="17">land- und forstwirtschaftlich genutztes Grundstück</option>
+<option value="18">Sonstiges</option>
+</select>
+</td></tr></tbody></table>
+<br>
+<br>
+<!--Lage-->
+<table border="0"><tbody><tr><td colspan="3"><b>Lage:</b></td></tr>
+<tr><td><table border="0">
+<tbody><tr><td>Str.:</td><td><input name="str" size="50" style="width:160px" value="">&nbsp;&nbsp;&nbsp;Nr:&nbsp;<input name="hnr" size="50" style="width:40px" value="">
+</td></tr>
+<tr><td>PLZ:</td><td><input name="plz" id="plz" size="5" maxlength="5" style="width:40px" value=""><font color="white">*</font>Ort:&nbsp;<input name="ort" id="ort" size="50" style="width:168px" value=""></td></tr>
+<tr><td>Ortsteil:</td><td><input name="ortsteil" size="50" style="width:243px" value=""></td></tr>
+</tbody></table></td></tr></tbody></table>
+<br>
+<!--Hinweis-->
+<table><tbody><tr><td><input name="hinweis" type="checkbox">Die Wertgrenzen (5/10 und 7/10) sind weggefallen</td></tr></tbody></table><br>
+
+
+<!-- Termin -->
+
+<!-- calendar stylesheet -->
+<!-- Bug in Firefox -->
+<!-- link rel=stylesheet type='text/css' media=all href='calendar/calendar-system.css' title=system / -->
+<style type="text/css" media="screen">
+@import url(calendar/calendar-system.css);
+</style>
+<!-- main calendar program -->
+<script type="text/javascript" src="calendar/calendar.js"></script>
+<script type="text/javascript" src="calendar/lang/calendar-de.js"></script>
+<!-- the following script defines the Calendar.setup helper function, which makes
+       adding a calendar a matter of 1 or 2 lines of code. -->
+<script type="text/javascript" src="calendar/calendar-setup.js"></script>
+
+<table><tbody><tr><td><b>Termin&nbsp;<button type="reset" id="b_vtermin">von</button></b>
+<span id="show_vtermin"></span>
+<input name="vtermin" id="vtermin" type="hidden" value=""></td></tr></tbody></table>
+<br>
+<script type="text/javascript">
+  Calendar.setup({
+        inputField     :    'vtermin',      // id of the input field
+        ifFormat       :    '%Y-%m-%d',       // format of the input field
+        displayArea    :    'show_vtermin',       // ID of the span where the date is to be shown
+        daFormat       :    '%A, %d. %B %Y', // format of the displayed date
+        showsTime      :    true,            // will display a time selector
+        button         :    'b_vtermin',   // trigger for the calendar (button ID)
+        singleClick    :    true,           // double-click mode
+        step           :    1,                // show all years in drop-down boxes (instead of every other year as default)
+        range          :    [2000, 2030],
+	showsTime	: false
+//        onClose         :  termiTest
+    });
+</script>
+
+<table><tbody><tr><td><b>Termin&nbsp;<button type="reset" id="b_btermin">bis</button></b>
+<span id="show_btermin"></span>
+<input name="btermin" id="btermin" type="hidden" value=""></td></tr></tbody></table>
+
+<script type="text/javascript">
+  Calendar.setup({
+        inputField     :    'btermin',      // id of the input field
+        ifFormat       :    '%Y-%m-%d',       // format of the input field
+        displayArea    :    'show_btermin',       // ID of the span where the date is to be shown
+        daFormat       :    '%A, %d. %B %Y', // format of the displayed date
+        showsTime      :    true,            // will display a time selector
+        button         :    'b_btermin',   // trigger for the calendar (button ID)
+        singleClick    :    true,           // double-click mode
+        step           :    1,                // show all years in drop-down boxes (instead of every other year as default)
+        range          :    [2000, 2030],
+        showsTime       : false
+
+//        onClose         :  termiTest
+    });
+</script>
+<script>
+function reset_form(){
+
+	document.getElementById('show_btermin').innerText='';
+	document.getElementById('btermin').value='';
+	document.getElementById('show_vtermin').innerText='';
+	document.getElementById('vtermin').value='';
+
+	document.globe.obj_arr.length=0;
+}
+
+</script>
+
+
+
+
+
+<h3>
+<nobr>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<button type="submit">Suchen</button>
+<button type="reset" onclick="reset_form()">Zurücksetzen</button>
+</nobr></h3>
+</form>
+<br>
+<font color="red">*</font>&nbsp;Pflichtfeld
+<p></p>
+        </div><!-- ende Inhalt -->
+
+         <div id="addinfo"><!-- ende Addinfo -->
+            <h3>Weitere Infos</h3>
+            <ul>
+                <li class="publication"><a target="_blank" href="https://justiz.de">Justizportal des Bundes und der Länder</a></li>
+                <li class="publication"><a target="_blank" href="http://www.handelsregister.de">Gemeinsames Registerportal der Länder</a></li>
+                <!-- li class="publication"><a target=_blank  href="Zustaendigkeitsliste.pdf">Liste der zust&auml;ndigen Registrierungsbeh&ouml;rden</a></li -->
+                <!-- li class="publication"><a  href="index.php?button=Antragsformulare&sess_clean=1">Antragsformulare</a></li-->
+            </ul>
+        </div><!-- ende Addinfo -->
+
+<div class="screen" id="footer"><!-- Footer -->
+             <p><nobr><a href="javascript:window.print()">Seite drucken</a>&nbsp;.&nbsp;<a href="#inhalt">zum Anfang</a></nobr></p>
+        </div><!-- Ende Footer -->
+
+ </div><!-- ende Container -->
+
+    
+
+
+</body></html>

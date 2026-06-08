@@ -1,0 +1,300 @@
+openapi: 3.0.3
+info:
+  title: CORDIS EU Research Grants API
+  description: |
+    Search 50,000+ EU-funded research projects from the official CORDIS database.
+    Covers Horizon Europe (2021-2027), H2020 (2014-2020), and FP7 (2007-2013).
+    Total: €100B+ in grants across science, technology, health, climate, and more.
+
+    **Use cases:**
+    - Find EU-funded competitors or potential partners by technology/keyword
+    - Track which universities receive grants in your research area
+    - Grant consultants searching for open calls and awarded projects
+    - VCs tracking EU-funded deep-tech startups
+    - Research institutions monitoring funded projects in a field
+    - Country-level analysis of EU R&D investment
+
+    **Data source:** Official EU CORDIS open data platform (https://cordis.europa.eu/).
+    Publicly available, no auth required from CORDIS.
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+  license:
+    name: Proprietary
+servers:
+  - url: https://api.yourdomain.com/v1
+    description: Production
+
+security:
+  - apiKey: []
+  - rapidApiKey: []
+
+paths:
+  /grants/search:
+    get:
+      summary: Search EU research grants/projects
+      description: |
+        Search projects by keyword, country, programme, status, and date range.
+        At least one of `q`, `country`, or `programme` is required.
+      operationId: searchGrants
+      tags: [Grants]
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+            example: artificial intelligence
+          description: Keywords to search in title, objective, and acronym
+        - name: country
+          in: query
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 2
+            example: DE
+          description: ISO 3166-1 alpha-2 country code of the coordinating organization
+        - name: programme
+          in: query
+          schema:
+            type: string
+            enum: [HORIZON, H2020, FP7]
+            example: HORIZON
+          description: EU funding programme
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ACTIVE, CLOSED]
+          description: Project status filter
+        - name: from
+          in: query
+          schema:
+            type: integer
+            example: 2021
+          description: Filter projects starting from this year (inclusive)
+        - name: to
+          in: query
+          schema:
+            type: integer
+            example: 2024
+          description: Filter projects starting up to this year (inclusive)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+          description: Results per page
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number (1-based)
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /grants/{id}:
+    get:
+      summary: Get project by CORDIS ID
+      description: Returns full project details including all participants, budget breakdown, and objective.
+      operationId: getGrant
+      tags: [Grants]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "101016775"
+          description: CORDIS numeric project ID
+      responses:
+        "200":
+          description: Project details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: "#/components/schemas/Project"
+                  dataSource:
+                    type: string
+                    example: EU CORDIS
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    rapidApiKey:
+      type: apiKey
+      in: header
+      name: X-RapidAPI-Proxy-Secret
+
+  schemas:
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "101016775"
+          description: CORDIS project ID
+        rcn:
+          type: string
+          description: CORDIS RCN (reference number)
+        acronym:
+          type: string
+          example: AIROBOTS
+          description: Project acronym
+        title:
+          type: string
+          example: "AI-powered autonomous robotics for industrial inspection"
+        status:
+          type: string
+          enum: [ACTIVE, CLOSED, PENDING]
+          example: ACTIVE
+        programme:
+          type: string
+          example: HORIZON
+          description: Funding programme (HORIZON, H2020, FP7)
+        topics:
+          type: array
+          items:
+            type: string
+          example: ["HORIZON-CL4-2021-HUMAN-01-12", "AI", "robotics"]
+        startDate:
+          type: string
+          format: date
+          example: "2022-01-01"
+        endDate:
+          type: string
+          format: date
+          example: "2025-12-31"
+        totalCostEur:
+          type: number
+          format: double
+          example: 4500000
+          description: Total project budget in EUR
+        ecContributionEur:
+          type: number
+          format: double
+          example: 3800000
+          description: EU contribution in EUR
+        objective:
+          type: string
+          description: Project objective (up to 500 characters in list view, full text in detail view)
+        coordinator:
+          $ref: "#/components/schemas/Organization"
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+        url:
+          type: string
+          format: uri
+          example: https://cordis.europa.eu/project/id/101016775
+
+    Organization:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Technische Universität München
+        shortName:
+          type: string
+          example: TUM
+        country:
+          type: string
+          example: DE
+          description: ISO 3166-1 alpha-2 country code
+        city:
+          type: string
+          example: Munich
+        role:
+          type: string
+          enum: [coordinator, participant]
+        contributionEur:
+          type: number
+          format: double
+          example: 1200000
+          description: Organization's share of EC funding in EUR
+
+    SearchResult:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 847
+          description: Total matching projects in CORDIS
+        page:
+          type: integer
+          example: 1
+        perPage:
+          type: integer
+          example: 25
+        count:
+          type: integer
+          example: 25
+          description: Results in this page
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        dataSource:
+          type: string
+          example: "EU CORDIS — Horizon Europe / H2020 / FP7"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Missing or invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Invalid or missing API key
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Project not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

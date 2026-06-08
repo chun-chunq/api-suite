@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: German Insolvency Register API
+  description: |
+    Search German insolvency proceedings in real time from the official Insolvenzbekanntmachungen.de portal.
+    Updated as courts publish new proceedings. Covers all German courts.
+
+    **Use cases:** Credit checks, debt collection, tenant screening, M&A due diligence, risk monitoring.
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/insolvency/search:
+    get:
+      summary: Search insolvency proceedings
+      operationId: searchInsolvency
+      tags: [Insolvency]
+      parameters:
+        - name: name
+          in: query
+          schema: { type: string, example: "Mustermann GmbH" }
+          description: Debtor name
+        - name: city
+          in: query
+          schema: { type: string, example: "München" }
+          description: City of the court
+        - name: maxResults
+          in: query
+          schema: { type: integer, default: 50, maximum: 200 }
+      responses:
+        "200":
+          description: Insolvency proceedings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/Proceeding" }
+        "400": { description: Bad request }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    Proceeding:
+      type: object
+      properties:
+        id: { type: string }
+        debtor: { type: string }
+        type: { type: string }
+        status: { type: string }
+        court: { type: string }
+        city: { type: string }
+        openedAt: { type: string, format: date }
+        caseNumber: { type: string }
+  responses:
+    Unauthorized:
+      description: Invalid API key
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }

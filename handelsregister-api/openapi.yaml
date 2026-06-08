@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: German Handelsregister (Commercial Register) API
+  description: |
+    Search the German Handelsregister — the official commercial register for all German companies.
+    Look up companies by name or HRB number, get registered address, directors, business purpose,
+    share capital, and registration court.
+
+    **Use cases:** KYB (Know Your Business), due diligence, supplier verification,
+    corporate structure research, German company search for fintech onboarding.
+
+    Data source: Official Handelsregister portal (handelsregister.de)
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/company/search:
+    get:
+      summary: Search companies by name
+      operationId: searchHandelsregister
+      tags: [Handelsregister]
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema: { type: string, example: "Volkswagen AG" }
+          description: Company name (partial match supported)
+        - name: maxResults
+          in: query
+          schema: { type: integer, default: 20, maximum: 100 }
+      responses:
+        "200":
+          description: Company search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/Company" }
+        "400": { description: name parameter required }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/company/{hrb}:
+    get:
+      summary: Get company by HRB number
+      operationId: getCompanyByHRB
+      tags: [Handelsregister]
+      parameters:
+        - name: hrb
+          in: path
+          required: true
+          schema: { type: string, example: "HRB 123456 B" }
+          description: HRB (Handelsregisternummer) identifier
+      responses:
+        "200":
+          description: Company record
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Company" }
+        "404": { description: Company not found }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    Company:
+      type: object
+      properties:
+        name: { type: string, example: "Volkswagen Aktiengesellschaft" }
+        legalForm: { type: string, example: "AG" }
+        hrb: { type: string, example: "HRB 100484 B" }
+        court: { type: string, example: "Amtsgericht Wolfsburg" }
+        status: { type: string, enum: [active, dissolved, merged] }
+        address:
+          type: object
+          properties:
+            street: { type: string }
+            postalCode: { type: string }
+            city: { type: string }
+            state: { type: string }
+        purpose: { type: string, description: "Business purpose (Unternehmensgegenstand)" }
+        shareCapital: { type: number, description: "Registered share capital in EUR" }
+        directors:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+              role: { type: string }
+        registeredAt: { type: string, format: date }
+        lastChangedAt: { type: string, format: date }
+  responses:
+    Unauthorized:
+      description: Invalid API key
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }

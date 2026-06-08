@@ -1,0 +1,11 @@
+{
+  "actorSpecification": 1,
+  "name": "bafin-licensed-institutions",
+  "title": "BaFin Licensed Institutions — German Financial Regulator",
+  "description": "Search BaFin-licensed banks, payment institutions, crypto asset service providers, investment firms, e-money institutions, and insurers in Germany. Verify regulatory authorization, retrieve license types and status. Data from the official BaFin portal.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "readme": "./README.md",
+  "input": "./INPUT_SCHEMA.json"
+}

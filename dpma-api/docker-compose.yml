@@ -1,0 +1,59 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      PORT: "8083"
+      REDIS_ADDR: "redis:6379"
+      API_KEYS: "demo-key-12345"
+      RATE_LIMIT_MAX: "30"         # 30/h — DPMA may throttle at high rates
+      RATE_LIMIT_WINDOW: "1h"
+      CACHE_TTL: "24h"             # trademark data changes rarely → long cache
+      LOG_LEVEL: "info"
+      ENVIRONMENT: "production"
+      CHROME_BIN: "/usr/bin/chromium"
+      MAX_BROWSERS: "2"            # max concurrent Chrome instances (idle savings)
+      MAX_QUEUE_DEPTH: "20"
+      ADMIN_SECRET: "admin-secret-aendere-mich"
+      BANDWIDTH_LIMIT_GB: "15"     # warn/block at 15TB (Hetzner plan = 20TB)
+      WORKER_SECRET: "aendere-mich-geheim-123"
+      # Add remote worker IPs here (comma-separated) for IP rotation.
+      # Dynamic addition via: POST /admin/workers {"url":"http://IP:9092"}
+      # WORKER_URLS: "http://SECOND-IP:9092"
+      WORKER_URLS: ""
+      GOGC: "50"
+      GOMEMLIMIT: "256MiB"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    # Memory limit on container level — prevents OOM from killing other services
+    mem_limit: 512m
+    mem_reservation: 128m
+
+  redis:
+    image: redis:7-alpine
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 64mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 80m
+
+volumes:
+  redis-data:
+
+

@@ -1,0 +1,37 @@
+{
+  "actorInputSchemaVersion": 1,
+  "title": "EU Sanctions Screening",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "apiKey": {
+      "title": "API Key",
+      "type": "string",
+      "editor": "textfield",
+      "isSecret": true,
+      "description": "Your API key from the marketplace"
+    },
+    "apiBaseUrl": {
+      "title": "API Base URL",
+      "type": "string",
+      "editor": "textfield",
+      "default": "https://api.yourdomain.com"
+    },
+    "names": {
+      "title": "Names to Screen",
+      "type": "array",
+      "description": "List of person or company names to screen against the EU sanctions list",
+      "editor": "stringList",
+      "example": ["Vladimir Putin", "Sberbank", "Rosneft"]
+    },
+    "mode": {
+      "title": "Mode",
+      "type": "string",
+      "enum": ["check", "search"],
+      "description": "'check' = fast yes/no result; 'search' = full details of matching entries",
+      "default": "check",
+      "editor": "select"
+    }
+  },
+  "required": ["apiKey", "names"]
+}

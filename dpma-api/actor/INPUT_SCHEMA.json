@@ -1,0 +1,48 @@
+{
+  "title": "DPMA Trademark Search",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "name": {
+      "title": "Trademark Name",
+      "type": "string",
+      "description": "Trademark name or keyword to search for",
+      "editor": "textfield"
+    },
+    "owner": {
+      "title": "Owner / Applicant",
+      "type": "string",
+      "description": "Owner or applicant company/person name",
+      "editor": "textfield"
+    },
+    "registrationNumber": {
+      "title": "Registration Number",
+      "type": "string",
+      "description": "Exact DPMA registration number",
+      "editor": "textfield"
+    },
+    "class": {
+      "title": "Nice Classes",
+      "type": "string",
+      "description": "Nice Classification class numbers 1-45, comma-separated (e.g. '9,35,42')",
+      "editor": "textfield"
+    },
+    "status": {
+      "title": "Status Filter",
+      "type": "string",
+      "description": "Filter by trademark status",
+      "editor": "select",
+      "enum": ["", "registered", "applied", "expired", "deleted"],
+      "enumTitles": ["All", "Registered", "Applied", "Expired", "Deleted"]
+    },
+    "maxResults": {
+      "title": "Max Results",
+      "type": "integer",
+      "description": "Maximum number of results (1-200)",
+      "default": 50,
+      "minimum": 1,
+      "maximum": 200,
+      "editor": "number"
+    }
+  }
+}

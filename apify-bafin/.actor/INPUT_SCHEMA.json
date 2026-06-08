@@ -1,0 +1,21 @@
+{
+  "actorInputSchemaVersion": 1,
+  "title": "BaFin Licensed Institutions Search",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "apiKey": { "title": "API Key", "type": "string", "editor": "textfield", "isSecret": true },
+    "apiBaseUrl": { "title": "API Base URL", "type": "string", "editor": "textfield", "default": "https://api.yourdomain.com" },
+    "name": { "title": "Institution Name", "type": "string", "editor": "textfield", "description": "Name of the institution to search" },
+    "licenseType": {
+      "title": "License Type",
+      "type": "string",
+      "editor": "select",
+      "enum": ["bank","investmentfirm","paymentinstitution","emoneyinstitution","cryptoassets","insurance","fundmanager","broker"],
+      "enumTitles": ["Bank (CRR-Kreditinstitut)","Investment Firm (Wertpapierinstitut)","Payment Institution","E-Money Institution","Crypto Asset Services","Insurance","Fund Manager (KVG)","Broker (FDL)"],
+      "description": "Filter by BaFin license category"
+    },
+    "maxResults": { "title": "Max Results", "type": "integer", "default": 50, "minimum": 1, "maximum": 200, "editor": "number" }
+  },
+  "required": ["apiKey"]
+}

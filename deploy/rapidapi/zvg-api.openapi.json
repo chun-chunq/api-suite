@@ -1,0 +1,226 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "German Foreclosure Auctions API (ZVG)",
+    "description": "Real-time access to German foreclosure auction listings (Zwangsversteigerungen) from the official ZVG portal (zvg-portal.de). Search properties across all 16 German states by location, property type, court and more.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "help@novaroute.fyi"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.novaroute.fyi",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/v1/zvg/search": {
+      "get": {
+        "summary": "Search Foreclosure Listings",
+        "description": "Search the official German ZVG portal for foreclosure auctions. Filter by state, court, postal code, city, property type and more. At least one filter (state, courtId, postalCode, city, or caseNumber) is required.",
+        "operationId": "searchZVG",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "description": "German state abbreviation (e.g. by=Bayern, nw=NRW, be=Berlin, bw=Baden-Württemberg)",
+            "schema": {
+              "type": "string",
+              "enum": ["by", "nw", "be", "bw", "hb", "hh", "he", "mv", "ni", "rp", "sh", "sl", "sn", "st", "th", "bb"],
+              "example": "by"
+            }
+          },
+          {
+            "name": "courtId",
+            "in": "query",
+            "required": false,
+            "description": "Amtsgericht (local court) ID, e.g. D2601 for München",
+            "schema": {
+              "type": "string",
+              "example": "D2601"
+            }
+          },
+          {
+            "name": "postalCode",
+            "in": "query",
+            "required": false,
+            "description": "German postal code (PLZ)",
+            "schema": {
+              "type": "string",
+              "example": "80331"
+            }
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "description": "City name",
+            "schema": {
+              "type": "string",
+              "example": "München"
+            }
+          },
+          {
+            "name": "street",
+            "in": "query",
+            "required": false,
+            "description": "Street name",
+            "schema": {
+              "type": "string",
+              "example": "Maximilianstraße"
+            }
+          },
+          {
+            "name": "objectType",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated property type IDs: 1=Reihenhaus, 3=Einfamilienhaus, 5=Eigentumswohnung, 7=Mehrfamilienhaus, 9=Grundstück, 11=Gewerbe",
+            "schema": {
+              "type": "string",
+              "example": "3,5"
+            }
+          },
+          {
+            "name": "procedureType",
+            "in": "query",
+            "required": false,
+            "description": "Procedure type: 0-8 for specific types, -1 for all",
+            "schema": {
+              "type": "string",
+              "example": "-1"
+            }
+          },
+          {
+            "name": "caseNumber",
+            "in": "query",
+            "required": false,
+            "description": "Court case number (Aktenzeichen)",
+            "schema": {
+              "type": "string",
+              "example": "2 K 123/24"
+            }
+          },
+          {
+            "name": "objectText",
+            "in": "query",
+            "required": false,
+            "description": "Free-text search in object description",
+            "schema": {
+              "type": "string",
+              "example": "Wohnung"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "description": "Sort order: 2=Auction date (default), 1=Last updated, 3=Case number",
+            "schema": {
+              "type": "string",
+              "enum": ["1", "2", "3"],
+              "default": "2",
+              "example": "2"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Foreclosure listings matching the search criteria",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": { "type": "integer", "example": 12 },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "caseNumber": { "type": "string", "example": "2 K 45/24" },
+                          "court": { "type": "string", "example": "Amtsgericht München" },
+                          "auctionDate": { "type": "string", "format": "date-time" },
+                          "objectType": { "type": "string", "example": "Eigentumswohnung" },
+                          "address": { "type": "string" },
+                          "marketValue": { "type": "number", "example": 450000 },
+                          "description": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required filter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid or missing API key" },
+          "429": { "description": "Scrape queue full — retry after indicated seconds" }
+        },
+        "security": [{ "ApiKeyAuth": [] }]
+      }
+    },
+    "/v1/zvg/courts": {
+      "get": {
+        "summary": "List Courts by State",
+        "description": "Returns all Amtsgerichte (local courts) that handle foreclosure auctions for a given German state. Use the returned court IDs with the search endpoint.",
+        "operationId": "listCourts",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "description": "German state abbreviation",
+            "schema": {
+              "type": "string",
+              "enum": ["by", "nw", "be", "bw", "hb", "hh", "he", "mv", "ni", "rp", "sh", "sl", "sn", "st", "th", "bb"],
+              "example": "by"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of courts for the given state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string", "example": "D2601" },
+                      "name": { "type": "string", "example": "Amtsgericht München" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Missing state parameter" },
+          "401": { "description": "Invalid or missing API key" }
+        },
+        "security": [{ "ApiKeyAuth": [] }]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  }
+}

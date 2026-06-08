@@ -1,0 +1,66 @@
+{
+  "actorInputSchemaVersion": 1,
+  "title": "GLEIF LEI Lookup",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "apiKey": {
+      "title": "API Key",
+      "type": "string",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "apiBaseUrl": {
+      "title": "API Base URL",
+      "type": "string",
+      "editor": "textfield",
+      "default": "https://api.yourdomain.com"
+    },
+    "mode": {
+      "title": "Mode",
+      "type": "string",
+      "enum": ["search", "lookup", "bulk_lookup"],
+      "description": "'search' = find by company name; 'lookup' = get by LEI code; 'bulk_lookup' = lookup multiple LEI codes",
+      "default": "search",
+      "editor": "select"
+    },
+    "companyName": {
+      "title": "Company Name",
+      "type": "string",
+      "description": "Company name to search (used in 'search' mode)",
+      "editor": "textfield"
+    },
+    "country": {
+      "title": "Country Filter",
+      "type": "string",
+      "description": "ISO-2 country code to filter results (e.g. DE, US, CH)",
+      "editor": "textfield"
+    },
+    "lei": {
+      "title": "LEI Code",
+      "type": "string",
+      "description": "20-character LEI code (used in 'lookup' mode)",
+      "editor": "textfield"
+    },
+    "leiCodes": {
+      "title": "LEI Codes (bulk)",
+      "type": "array",
+      "description": "List of LEI codes for bulk lookup",
+      "editor": "stringList"
+    },
+    "includeRelationships": {
+      "title": "Include Ownership Relationships",
+      "type": "boolean",
+      "description": "Also fetch parent/child relationships for each entity",
+      "default": false,
+      "editor": "checkbox"
+    },
+    "activeOnly": {
+      "title": "Active LEIs only",
+      "type": "boolean",
+      "default": true,
+      "editor": "checkbox"
+    }
+  },
+  "required": ["apiKey"]
+}

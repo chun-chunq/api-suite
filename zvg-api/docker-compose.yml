@@ -1,0 +1,49 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8081:8080"
+    environment:
+      PORT: "8080"
+      REDIS_ADDR: "redis:6379"
+      API_KEYS: "demo-key-12345"
+      RATE_LIMIT_MAX: "60"
+      RATE_LIMIT_WINDOW: "1h"
+      CACHE_TTL: "1h"
+      LOG_LEVEL: "info"
+      ENVIRONMENT: "production"
+      CHROME_BIN: "/usr/bin/chromium"
+      GOGC: "50"
+      GOMEMLIMIT: "256MiB"
+      MAX_BROWSERS: "2"
+      MAX_QUEUE_DEPTH: "20"
+      ADMIN_SECRET: "admin-secret-aendere-mich"
+      BANDWIDTH_LIMIT_GB: "15"
+      # WORKER_URLS: "http://100.x.x.x:9091,http://home-pc:9091"
+      # Secret shared with the home-PC worker (pc-worker.exe).
+      WORKER_SECRET: "aendere-mich-geheim-123"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    mem_limit: 512m
+    mem_reservation: 128m
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+

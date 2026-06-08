@@ -1,0 +1,27 @@
+# Worker image — runs only the scrape worker (no API server, no Redis needed).
+# Deploy one of these per additional IP/server.
+FROM golang:1.22-bookworm AS build
+
+WORKDIR /src
+COPY go.mod go.su[m] ./
+RUN go mod download all || go mod tidy
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /out/worker ./cmd/worker
+
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        chromium ca-certificates tzdata fonts-liberation \
+        libnss3 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
+        libxdamage1 libxrandr2 libgbm1 libxkbcommon0 libasound2 \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r appuser && useradd -r -g appuser -u 10001 appuser
+
+COPY --from=build /out/worker /usr/local/bin/worker
+
+USER appuser
+ENV WORKER_PORT=9090
+ENV CHROME_BIN=/usr/bin/chromium
+EXPOSE 9090
+
+ENTRYPOINT ["/usr/local/bin/worker"]

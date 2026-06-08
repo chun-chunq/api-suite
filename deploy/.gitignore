@@ -1,0 +1,10 @@
+# NEVER commit these — they contain secrets
+.env
+
+# Runtime artifacts
+*.log
+*.pid
+
+# OS noise
+.DS_Store
+Thumbs.db

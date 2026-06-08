@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  title: German ZVG Foreclosure Auctions API
+  description: |
+    Search German ZVG (Zwangsversteigerung) foreclosure auctions from the official zvg-portal.de.
+    Find properties being auctioned, with court dates, property descriptions, and estimated values.
+
+    **Use cases:** Real estate investment, property fund sourcing, due diligence, Makler (estate agents).
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/zvg/search:
+    get:
+      summary: Search foreclosure auctions
+      operationId: searchZVG
+      tags: [ZVG]
+      parameters:
+        - name: state
+          in: query
+          schema: { type: string, example: "Bayern" }
+          description: German federal state
+        - name: city
+          in: query
+          schema: { type: string, example: "München" }
+        - name: type
+          in: query
+          schema: { type: string }
+          description: Property type (Wohnhaus, Gewerbe, Grundstück, etc.)
+        - name: maxResults
+          in: query
+          schema: { type: integer, default: 50, maximum: 200 }
+      responses:
+        "200":
+          description: Foreclosure auctions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/Auction" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    Auction:
+      type: object
+      properties:
+        id: { type: string }
+        court: { type: string }
+        auctionDate: { type: string, format: date }
+        propertyType: { type: string }
+        address: { type: string }
+        estimatedValue: { type: number }
+        description: { type: string }
+        caseNumber: { type: string }
+  responses:
+    Unauthorized:
+      description: Invalid API key
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }

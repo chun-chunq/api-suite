@@ -1,0 +1,322 @@
+openapi: 3.0.3
+info:
+  title: GLEIF LEI Lookup API
+  description: |
+    Search and validate Legal Entity Identifiers (LEI) from the official GLEIF Global LEI Index.
+    LEI codes are 20-character ISO 17442 identifiers required for MiFID II, EMIR, and Dodd-Frank
+    regulatory reporting. This API covers 2.3M+ legal entities worldwide.
+
+    **Use cases:**
+    - Validate counterparty LEI codes before trade reporting
+    - KYB (Know Your Business) — look up company legal structure
+    - Map SWIFT BIC codes to legal entities
+    - Discover corporate ownership chains (parent/child relationships)
+
+    **Data source:** GLEIF Global LEI Index (public data, no auth required from GLEIF).
+    Updated daily. Free tier available for testing.
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+  license:
+    name: Proprietary
+servers:
+  - url: https://api.yourdomain.com/v1
+    description: Production
+
+security:
+  - apiKey: []
+  - rapidApiKey: []
+
+paths:
+  /lei/search:
+    get:
+      summary: Search entities by company name
+      description: |
+        Full-text search across 2.3M+ legal entities by company name.
+        Optionally filter by country and active status.
+      operationId: searchLEI
+      tags: [LEI]
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: Deutsche Bank
+          description: Company name to search (partial matches supported)
+        - name: country
+          in: query
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 2
+            example: DE
+          description: ISO 3166-1 alpha-2 country code filter
+        - name: active
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: If true, return only entities with ACTIVE LEI status
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+          description: Maximum number of results
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /lei/{lei}:
+    get:
+      summary: Get entity by LEI code
+      description: Returns the full legal entity record for a given 20-character LEI code.
+      operationId: getLEI
+      tags: [LEI]
+      parameters:
+        - name: lei
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 20
+            maxLength: 20
+            example: 5299000J2N45DDNE4Y28
+          description: 20-character LEI code (ISO 17442)
+      responses:
+        "200":
+          description: Entity record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lei:
+                    $ref: "#/components/schemas/Entity"
+                  dataSource:
+                    type: string
+                    example: GLEIF Global LEI Index
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /lei/{lei}/relationships:
+    get:
+      summary: Get ownership relationships
+      description: |
+        Returns the corporate ownership structure for a legal entity:
+        - Direct parent (immediate owner with 50%+ control)
+        - Ultimate parent (top of the ownership chain)
+        - Direct children (subsidiaries)
+      operationId: getLEIRelationships
+      tags: [LEI]
+      parameters:
+        - name: lei
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 20
+            maxLength: 20
+            example: 5299000J2N45DDNE4Y28
+      responses:
+        "200":
+          description: Ownership relationships
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lei:
+                    type: string
+                  relationships:
+                    $ref: "#/components/schemas/RelationshipSummary"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    rapidApiKey:
+      type: apiKey
+      in: header
+      name: X-RapidAPI-Proxy-Secret
+
+  schemas:
+    Entity:
+      type: object
+      properties:
+        lei:
+          type: string
+          example: 5299000J2N45DDNE4Y28
+          description: 20-character LEI code (ISO 17442)
+        name:
+          type: string
+          example: Deutsche Bank AG
+        legalName:
+          type: string
+          example: Deutsche Bank Aktiengesellschaft
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, PENDING_TRANSFER, PENDING_ARCHIVAL]
+          example: ACTIVE
+        legalForm:
+          type: string
+          description: Legal form code (e.g. DE-AG for German AG)
+          example: DE-AG
+        jurisdiction:
+          type: string
+          description: Country or region of incorporation
+          example: DE
+        category:
+          type: string
+          enum: [BRANCH, FUND, SOLE_PROPRIETOR, GENERAL]
+        registeredAddress:
+          $ref: "#/components/schemas/Address"
+        headquartersAddress:
+          $ref: "#/components/schemas/Address"
+        bicCodes:
+          type: array
+          items:
+            type: string
+          description: Associated SWIFT BIC codes
+          example: [DEUTDEDB, DEUTDEFF]
+        createdAt:
+          type: string
+          format: date-time
+          description: Initial LEI registration date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last data update
+        nextRenewalDate:
+          type: string
+          format: date
+          description: LEI renewal due date
+        managingOU:
+          type: string
+          description: LEI issuer (Local Operating Unit) identifier
+
+    Address:
+      type: object
+      properties:
+        lines:
+          type: array
+          items:
+            type: string
+          example: ["Taunusanlage 12"]
+        city:
+          type: string
+          example: Frankfurt am Main
+        region:
+          type: string
+          example: DE-HE
+        country:
+          type: string
+          example: DE
+        postalCode:
+          type: string
+          example: "60325"
+
+    RelationshipSummary:
+      type: object
+      properties:
+        directParent:
+          $ref: "#/components/schemas/Entity"
+        ultimateParent:
+          $ref: "#/components/schemas/Entity"
+        directChildren:
+          type: array
+          items:
+            $ref: "#/components/schemas/Entity"
+
+    SearchResult:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 142
+          description: Total matching entities in GLEIF index
+        count:
+          type: integer
+          example: 50
+          description: Number of results in this response
+        query:
+          type: string
+          example: Deutsche Bank
+        country:
+          type: string
+          example: DE
+        activeOnly:
+          type: boolean
+          example: false
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Entity"
+        dataSource:
+          type: string
+          example: GLEIF Global LEI Index
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: invalid or missing API key
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Missing or invalid API key
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: LEI not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    RateLimited:
+      description: Rate limit exceeded
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until rate limit resets
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

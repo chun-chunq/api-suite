@@ -1,0 +1,12 @@
+{
+  "_comment": "Add this to your Claude Desktop claude_desktop_config.json under 'mcpServers'",
+  "mcpServers": {
+    "dpma-trademark": {
+      "command": "curl",
+      "args": ["-s", "-X", "POST", "https://YOUR-SERVER.DE/mcp"],
+      "_note": "OR use the HTTP transport below for Claude Desktop 0.8+",
+      "url": "https://YOUR-SERVER.DE/mcp",
+      "transport": "http"
+    }
+  }
+}

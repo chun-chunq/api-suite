@@ -1,0 +1,26 @@
+{
+  "actorSpecification": 1,
+  "name": "german-insolvency-register",
+  "title": "German Insolvency Register (Insolvenzbekanntmachungen)",
+  "description": "Search and retrieve German insolvency proceedings from the official Insolvenzbekanntmachungen.de portal. Look up debtors by name, city, or court. Returns case details, court dates, and proceedings type. Ideal for credit checks, debt collection, and risk management.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "environmentVariables": [],
+  "dockerfile": "./Dockerfile",
+  "readme": "./README.md",
+  "input": "./INPUT_SCHEMA.json",
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "title": "Insolvency Proceedings",
+      "views": {
+        "overview": {
+          "title": "Overview",
+          "transformation": {
+            "fields": ["id","debtor","type","status","court","city","openedAt","caseNumber"]
+          }
+        }
+      }
+    }
+  }
+}

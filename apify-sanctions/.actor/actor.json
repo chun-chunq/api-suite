@@ -1,0 +1,11 @@
+{
+  "actorSpecification": 1,
+  "name": "eu-sanctions-screening",
+  "title": "EU Sanctions List Screening (AML/KYC)",
+  "description": "Screen individuals and companies against the EU consolidated sanctions list. Required for AML/KYC compliance. Returns match results with aliases, nationalities, and sanction grounds. Updated daily from official EU sources.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "readme": "./README.md",
+  "input": "./INPUT_SCHEMA.json"
+}

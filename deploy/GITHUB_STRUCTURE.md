@@ -1,0 +1,158 @@
+# GitHub Repo — Structure & Setup Guide
+
+## One-Time Setup (Windows)
+
+```bat
+REM Step 1: Pack everything into C:\api-suite\
+C:\deploy\pack.bat
+
+REM Step 2: Initialize git repo at C:\api-suite\ (NOT C:\)
+C:\deploy\git-setup.bat
+
+REM Step 3: Follow the printed instructions to push to GitHub
+```
+
+## Deploy to Server (One Command)
+
+After pushing to GitHub, deploy on any Linux server with:
+```bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/api-suite/main/deploy/github-deploy.sh | bash
+```
+
+This installs Docker, clones the repo, sets up SSL, and starts all services.
+
+## Update Deployed Server
+
+```bash
+# On your server (after git push from Windows):
+ssh user@server "cd /srv/apis/deploy && ./update.sh"
+```
+
+---
+
+## Repo Layout
+
+```
+api-suite/                        ← git repo root (C:\api-suite\ after pack.bat)
+├── .github/
+│   └── workflows/
+│       └── ci.yml                ← auto-copied from deploy/ci.yml by git-setup.bat
+├── .gitignore                    ← auto-created by git-setup.bat
+│
+├── gateway/                      ← API gateway (port 8000)
+├── resilience/                   ← circuit breaker package (shared)
+├── monitor/                      ← health monitor (port 8091)
+├── dashboard/                    ← analytics dashboard (port 8088)
+│
+├── vat-api/                      ← VAT validation (port 8081)
+├── countries-api/                ← country data (port 8082)
+├── pubchem-api/                  ← chemistry (port 8083)
+├── nasa-api/                     ← NASA data (port 8084)
+├── pokeapi/                      ← Pokémon (port 8085)
+├── airquality-api/               ← air quality (port 8086)
+├── exchangerate-api/             ← FX rates (port 8087)
+├── gbif-api/                     ← biodiversity (port 8089)
+├── trivia-api/                   ← trivia questions (port 8116)
+├── numbers-api/                  ← number facts (port 8117)
+├── joke-api/                     ← jokes (port 8118)
+├── namepredict-api/              ← name predictions (port 8119)
+├── worldbank-api/                ← World Bank data (port 8120)
+├── clinicaltrials-api/           ← clinical trials (port 8121)
+├── insolvency-api/               ← DE insolvency (port 8080)
+├── zvg-api/                      ← DE foreclosures (port 8093)
+├── ted-api/                      ← EU tenders (port 8094)
+├── dpma-api/                     ← DE patents (port 8095)
+├── sanctions-api/                ← sanctions lists (port 8096)
+├── safety-api/                   ← product safety (port 8097)
+├── zefix-api/                    ← CH company register (port 8098)
+├── bafin-api/                    ← DE financial regulator (port 8099)
+├── gleif-api/                    ← global LEI data (port 8100)
+├── cordis-api/                   ← EU research projects (port 8101)
+├── handelsregister-api/          ← DE company register (port 8102)
+├── euipo-api/                    ← EU trademarks (port 8103)
+├── french-company-api/           ← FR company register (port 8104)
+├── uk-company-api/               ← UK Companies House (port 8105) — optional
+├── research-api/                 ← academic papers (port 8106)
+├── gdpr-api/                     ← GDPR authority decisions (port 8107)
+├── sec-api/                      ← US SEC filings (port 8108)
+├── food-api/                     ← food/nutrition (port 8109)
+├── aviation-api/                 ← flight data (port 8110)
+├── weather-api/                  ← weather (port 8111)
+├── currency-api/                 ← currency conversion (port 8112)
+├── openfda-api/                  ← FDA drug data (port 8113)
+├── wikidata-api/                 ← Wikidata (port 8114)
+├── crypto-api/                   ← crypto prices (port 8115)
+├── books-api/                    ← book search (port 8116+)
+├── ipgeo-api/                    ← IP geolocation (port 8116+)
+│
+└── deploy/
+    ├── docker-compose.yml
+    ├── nginx.conf
+    ├── .env.template              ← safe to commit (no secrets)
+    ├── github-deploy.sh           ← one-command server deploy
+    ├── update.sh                  ← git pull + rolling restart
+    ├── start.sh
+    ├── stop.sh
+    ├── setup-ssl.sh
+    ├── pack.bat                   ← Windows: assemble api-suite folder
+    ├── git-setup.bat              ← Windows: init git repo at api-suite
+    ├── generate-openapi.sh
+    ├── generate-mcp-servers.sh    ← generates server.json for MCP registries
+    ├── publish-smithery.sh        ← bulk publish all APIs to Smithery.ai
+    ├── ci.yml                     ← copied to .github/workflows/ci.yml
+    ├── GITHUB_DEPLOY.md
+    ├── GITHUB_STRUCTURE.md        ← this file
+    ├── MARKETPLACE_RANKING.md     ← revenue + MCP analysis + action plan
+    ├── well-known/                ← served at /.well-known/ by nginx
+    │   └── mcp-registry-auth      ← generated by mcp-publisher (add after domain auth)
+    └── marketplace/               ← one config file per marketplace
+        ├── README.md
+        ├── rapidapi.env           ← RapidAPI (20% cut, mixed competition)
+        ├── apilayer.env           ← APILayer (15% cut, best rate)
+        ├── apimarket.env          ← API.market (very low competition)
+        ├── zyla.env               ← Zyla API Hub (small audience)
+        └── mcp.env                ← MCP registries: Smithery, Glama, official
+```
+
+---
+
+## Marketplace Config Files
+
+Each `deploy/marketplace/*.env` file contains **all** settings needed to connect
+your server to that marketplace. To use one:
+
+```bash
+# On your server:
+cp /srv/apis/deploy/marketplace/rapidapi.env /srv/apis/deploy/.env
+nano /srv/apis/deploy/.env    # fill in the secrets
+cd /srv/apis/deploy && docker compose up -d
+```
+
+Or merge multiple marketplace configs if running on several at once:
+```bash
+cat marketplace/rapidapi.env marketplace/apilayer.env > .env
+# then edit .env and remove duplicate keys
+```
+
+---
+
+## About UK Company API
+
+The `uk-company-api` is already built but optional. If you don't need it:
+- Remove `uk-company-api` service from `deploy/docker-compose.yml`
+- Remove its upstream + routes from `deploy/nginx.conf`
+- Remove its line from `deploy/pack.bat`
+- Delete the `uk-company-api/` folder from the repo
+
+Everything else continues to work fine.
+
+---
+
+## .gitignore Notes
+
+`git-setup.bat` automatically creates `.gitignore` at the repo root.  
+The following are always excluded:
+- `deploy/.env` — your server secrets
+- `*.env` — any env file (use `.env.template` for safe sharing)
+- `**/*.exe`, `**/bin/` — build artifacts
+- `.DS_Store`, `Thumbs.db` — OS files

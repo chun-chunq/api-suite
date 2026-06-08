@@ -1,0 +1,104 @@
+openapi: 3.0.3
+info:
+  title: BaFin Licensed Institutions API
+  description: |
+    Search BaFin-licensed financial institutions in Germany.
+    Covers banks, payment institutions, e-money institutions, investment firms,
+    crypto asset service providers, insurers, and fund managers.
+
+    **Use cases:** Fintech partner verification, crypto exchange compliance, M&A due diligence
+    in financial services, regulatory screening before onboarding financial counterparties.
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/bafin/search:
+    get:
+      summary: Search licensed institutions
+      operationId: searchBaFin
+      tags: [BaFin]
+      parameters:
+        - name: name
+          in: query
+          schema: { type: string, example: "Deutsche Bank" }
+          description: Institution name (partial match)
+        - name: licenseType
+          in: query
+          schema:
+            type: string
+            enum: [bank, investmentfirm, paymentinstitution, emoneyinstitution, cryptoassets, insurance, fundmanager, broker]
+          description: BaFin license category
+        - name: maxResults
+          in: query
+          schema: { type: integer, default: 20, maximum: 200 }
+      responses:
+        "200":
+          description: Licensed institutions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/Institution" }
+        "400": { description: name or licenseType required }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/bafin/license-types:
+    get:
+      summary: List all valid license types with descriptions
+      operationId: getBaFinLicenseTypes
+      tags: [BaFin]
+      responses:
+        "200":
+          description: License types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  licenseTypes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        name: { type: string }
+                        description: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    Institution:
+      type: object
+      properties:
+        name: { type: string, example: "Deutsche Bank AG" }
+        bafinId: { type: string, example: "10070000" }
+        licenseType: { type: string }
+        licenseTypeName: { type: string, example: "CRR-Kreditinstitut" }
+        status: { type: string, enum: [Active, Revoked, Suspended] }
+        city: { type: string }
+        country: { type: string }
+        detailUrl: { type: string, format: uri }
+  responses:
+    Unauthorized:
+      description: Invalid API key
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }

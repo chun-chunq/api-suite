@@ -1,0 +1,11 @@
+{
+  "actorSpecification": 1,
+  "name": "gleif-lei-lookup",
+  "title": "GLEIF LEI Lookup — Legal Entity Identifier Search",
+  "description": "Search and validate Legal Entity Identifiers (LEI) from the GLEIF Global LEI Index. Look up companies by name or LEI code, retrieve corporate ownership chains. Required for MiFID II, EMIR, and Dodd-Frank trade reporting. Covers 2.3M+ entities worldwide.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "readme": "./README.md",
+  "input": "./INPUT_SCHEMA.json"
+}

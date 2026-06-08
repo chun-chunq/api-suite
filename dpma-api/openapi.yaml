@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: German DPMA Trademark Register API
+  description: |
+    Search German trademark registrations at the DPMA (Deutsches Patent- und Markenamt).
+    Check trademark availability, retrieve owner details, filing dates, Nice classes, and status.
+
+    **Use cases:** Brand protection, trademark availability checks, competitor monitoring,
+    patent attorney research, trademark watch services.
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/trademark/search:
+    get:
+      summary: Search trademarks
+      operationId: searchTrademarks
+      tags: [Trademark]
+      parameters:
+        - name: name
+          in: query
+          schema: { type: string, example: "Apple" }
+          description: Trademark name or keyword
+        - name: owner
+          in: query
+          schema: { type: string, example: "Apple Inc" }
+        - name: class
+          in: query
+          schema: { type: string, example: "9,35,42" }
+          description: Nice Classification classes (comma-separated)
+        - name: status
+          in: query
+          schema: { type: string, enum: [registered, applied, expired, deleted] }
+        - name: registrationNumber
+          in: query
+          schema: { type: string, example: "30010285" }
+        - name: maxResults
+          in: query
+          schema: { type: integer, default: 20, maximum: 200 }
+      responses:
+        "200":
+          description: Trademarks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/Trademark" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    Trademark:
+      type: object
+      properties:
+        registrationNumber: { type: string }
+        name: { type: string }
+        owner: { type: string }
+        status: { type: string }
+        filingDate: { type: string, format: date }
+        registrationDate: { type: string, format: date }
+        classes: { type: array, items: { type: integer } }
+        goodsServices: { type: string }
+        type: { type: string, description: "word, figurative, combined, etc." }
+  responses:
+    Unauthorized:
+      description: Invalid API key
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }

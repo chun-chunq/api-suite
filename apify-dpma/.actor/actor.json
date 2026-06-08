@@ -1,0 +1,11 @@
+{
+  "actorSpecification": 1,
+  "name": "dpma-trademark-register",
+  "title": "German Trademark Register (DPMA)",
+  "description": "Search German trademark registrations at the DPMA (Deutsches Patent- und Markenamt). Check trademark availability, retrieve owner details, filing dates, Nice classification classes, and registration status. Essential for brand protection and trademark monitoring.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "readme": "./README.md",
+  "input": "./INPUT_SCHEMA.json"
+}

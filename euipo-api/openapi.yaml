@@ -1,0 +1,196 @@
+openapi: 3.0.3
+info:
+  title: EU Trademark Search API (TMview / EUIPO)
+  description: |
+    Search and look up trademarks across the European Union and 60+ national IP offices
+    via the official TMview database operated by EUIPO.
+
+    Covers: **EUIPO (EU)**, DPMA (Germany), INPI (France), IPO (UK), USPTO (USA), and more.
+
+    **Use cases:**
+    - Brand clearance before registering a new name or logo
+    - Monitoring competitor trademarks
+    - Trademark due diligence for M&A
+    - IP portfolio research and analysis
+    - Legal / law firm trademark screening tools
+
+    **Data source:** TMview — official EUIPO trademark search platform (open data, no auth required upstream)
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/eu-trademark/search:
+    get:
+      summary: Search trademarks
+      description: |
+        Search trademarks by name, holder, Nice class, territory, and status.
+        At least one of `q` (trademark name) or `holder` is required.
+      operationId: searchTrademarks
+      tags: [Trademarks]
+      parameters:
+        - name: q
+          in: query
+          description: Trademark name query (partial match)
+          schema: { type: string, example: "NIKE" }
+        - name: holder
+          in: query
+          description: Applicant or trademark holder name
+          schema: { type: string, example: "Apple Inc." }
+        - name: territory
+          in: query
+          description: |
+            Comma-separated office codes to filter by.
+            Common codes: EM (EUIPO/EU), DE (Germany), FR (France), GB (UK), US (USPTO)
+          schema: { type: string, example: "EM,DE,FR" }
+        - name: class
+          in: query
+          description: Comma-separated Nice classification classes (1–45)
+          schema: { type: string, example: "25,35" }
+        - name: status
+          in: query
+          description: Filter by trademark status
+          schema:
+            type: string
+            enum: [REGISTERED, PENDING, EXPIRED]
+        - name: limit
+          in: query
+          schema: { type: integer, default: 25, minimum: 1, maximum: 100 }
+        - name: offset
+          in: query
+          description: Pagination offset
+          schema: { type: integer, default: 0 }
+      responses:
+        "200":
+          description: Trademark search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer, description: "Total matching records" }
+                  offset: { type: integer }
+                  count: { type: integer, description: "Records in this page" }
+                  dataSource: { type: string, example: "TMview / EUIPO" }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/Trademark" }
+        "400": { description: "Missing required parameter (q or holder)" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "502": { description: "Upstream TMview unavailable" }
+
+  /v1/eu-trademark/{office}/{appNum}:
+    get:
+      summary: Get trademark by office and application number
+      operationId: getTrademarkByID
+      tags: [Trademarks]
+      parameters:
+        - name: office
+          in: path
+          required: true
+          description: IP Office code (EM = EUIPO, DE = DPMA, FR = INPI, GB = IPO, ...)
+          schema: { type: string, example: "EM" }
+        - name: appNum
+          in: path
+          required: true
+          description: Application number
+          schema: { type: string, example: "018123456" }
+      responses:
+        "200":
+          description: Trademark record
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Trademark" }
+        "404": { description: "Trademark not found" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { description: "Upstream TMview unavailable" }
+
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    Trademark:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Unique TMview ID (office code + application number)"
+          example: "EM018123456"
+        name:
+          type: string
+          description: "Trademark name (word mark) or figurative mark identifier"
+          example: "OPENAI"
+        applicationNum:
+          type: string
+          example: "018123456"
+        registrationNum:
+          type: string
+          example: "018123456"
+        status:
+          type: string
+          description: "Current trademark status"
+          example: "REGISTERED"
+        filingDate:
+          type: string
+          format: date
+          example: "2022-05-10"
+        expiryDate:
+          type: string
+          format: date
+          example: "2032-05-10"
+        office:
+          type: string
+          description: "IP Office code"
+          example: "EM"
+        officeName:
+          type: string
+          example: "European Union Intellectual Property Office"
+        applicant:
+          type: string
+          description: "Primary trademark holder/applicant name"
+          example: "OpenAI, L.L.C."
+        niceClasses:
+          type: array
+          description: "Nice classification classes (1–45)"
+          items: { type: integer }
+          example: [9, 42]
+        goods:
+          type: string
+          description: "Goods and services description (truncated to 500 chars)"
+          example: "[9] Computer software; [42] Software as a service (SaaS)"
+        type:
+          type: string
+          description: "Trademark type"
+          enum: [word, figurative, combined, other]
+          example: "word"
+        imageUrl:
+          type: string
+          description: "URL to figurative mark image (null for word marks)"
+          example: "https://www.tmdn.org/tmview/images/EM018123456.jpg"
+        url:
+          type: string
+          description: "Direct link to TMview entry"
+          example: "https://www.tmdn.org/tmview/#/trademark/EM018123456"
+  responses:
+    Unauthorized:
+      description: Invalid or missing API key
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }
+    RateLimited:
+      description: Rate limit exceeded (120 req/min)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }

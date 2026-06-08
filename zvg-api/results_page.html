@@ -1,0 +1,307 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de"><head>
+        <title>Justizportal - Verfahren</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <meta content="Justizportal des Bundes und der L�nder" name="DC.Description">
+        <meta content="Referat �ffentlichkeitsarbeit" name="DC.Author">
+        <meta content="Justizportal des Bundes und der L�nder" name="DC.Page-topic">
+	
+	<meta content="noindex,nofollow,nosnippet,noarchive,noodp" name="Robots">
+
+        <link href="mailto:redaktion@justiz.de" title="Mail" rel="author">
+        <link href="https://justiz.de/Uebersicht.php" title="Inhaltsverzeichnis" rel="contents">
+        <link href="https://justiz.de/index.php" title="Startseite" rel="start">
+        <link href="https://justiz.de/Impressum.php" title="Impressum" rel="copyright">
+        <link href="https://justiz.de/index.php#suchzeile" title="Suchen" rel="search">
+<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+
+<link title="Basis-Stylesheet" href="images/basis.css" type="text/css" rel="stylesheet">
+
+    <script>
+function blaettern(nseite,nl,nr,norder_by,ndesc)
+{
+
+var seite='';
+var l='';
+var r='';
+var all='';
+var order_by='';
+var desc='';
+
+
+//alert(seite+'-'+l+'-'+r+'-'+order_by+'-'+desc);
+
+//dropdown -> alle
+if(nseite=='all'){
+	var URL='index.php?button=Suchen&all=1';
+	//return location.replace(URL);
+ 	document.form_sucheZvg.action=URL;
+	document.form_sucheZvg.submit();
+return;
+}
+//dorpdown menue
+if(nl==-1 && nr==-1 && norder_by==-1 && ndesc==-1){
+        x=nseite.split("-");
+ 	var URL='index.php?button=Suchen&seite='+x[0]+'&l='+x[1]+'&r='+x[2]+'&order_by='+order_by+'&desc='+desc;
+//	return location.replace(URL);
+ 	document.form_sucheZvg.action=URL;
+        document.form_sucheZvg.submit();
+return;
+}
+//sortieren, nicht blaettern
+if(norder_by!=-1){
+ 	var URL='index.php?button=Suchen&seite='+seite+'&l='+l+'&r='+r+'&all='+all+'&order_by='+norder_by+'&desc='+ndesc+'';
+//return location.replace(URL);
+ 	document.form_sucheZvg.action=URL;
+        document.form_sucheZvg.submit();
+return;
+
+}
+var URL='index.php?button=Suchen&seite='+nseite+'&l='+nl+'&r='+nr+'&all='+all+'&order_by='+norder_by+'&desc='+ndesc;
+//return location.replace(URL);
+ document.form_sucheZvg.action=URL;
+        document.form_sucheZvg.submit();
+
+
+}
+</script></head>
+
+
+
+    <body>
+        <!-- Kopfbereich -->
+        <a name="top"></a>
+        <a href="https://justiz.de/" title="Link zur Startseite"><img src="images/justitia.gif" alt="Justitia auf Deutschlandkarte" id="logo" height="132" width="160"></a>
+        <h1 id="kopf">Zwangsversteigerungstermine</h1>
+        <div id="micronavi"><!-- Micronavi -->
+        Sie sind hier:
+            <ul>
+                <li><a href="index.php?button=Termine suchen"><span class="pfeil">&gt;</span>Termine suchen</a></li>            </ul>
+        </div><!-- ende Micronavi -->
+
+
+
+        <!-- Ende Kopfbereich -->
+
+<div id="container"><!-- Container -->
+<div id="navi" class="noprint"> <!-- Navigation linke Seite -->
+            <ul class="hinterlegt">
+		<li><a href="index.php?button=Termine suchen">Termine suchen</a></li>
+		
+		 <li><a href="index.php?button=Uebersicht">Übersicht</a></li>
+
+		 <li><a href="index.php?button=Hinweise fuer Bieter">Hinweise für Bieter</a></li>
+
+		 <li><a href="index.php?button=handbuch&amp;sess_clean=1" target="_blanc">Bieter Handbuch</a></li>
+
+            </ul>
+            <ul class="binnennavi">
+                <li><a href="index.php?button=Startseite" title="Startseite">Startseite</a></li>
+                <li><a href="index.php?button=Impressum">Impressum</a></li>
+                <li><a href="https://justiz.de/datenschutz/index.php" target="_blank">Rechtliche Hinweise</a></li>
+    		<li><a href="index.php?button=Kontakt">Kontakt</a></li>
+            </ul>
+                <div id="zusatznavi">
+
+</div>
+
+            <form action="https://justiz.de/suchergebnis/index.php" method="get"><label class="small" for="query">Suche</label><br>
+                <input name="q" id="suchzeile" type="text"><input src="images/lupe.gif" alt="" type="image">
+            </form>
+        </div> <!-- Ende Navigation -->
+
+        <div id="inhalt"><!-- Inhalt -->
+                <p>
+<nobr></nobr></p><h3><nobr>Alle Termine, Insgesamt 351
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button onclick="document.form_sucheZvg.action='index.php?button=Termine suchen';document.form_sucheZvg.submit();">Suche ändern</button></nobr></h3>
+<form name="form_sucheZvg" method="post">
+<input type="hidden" name="ger_name" value="">
+<input type="hidden" name="order_by" value="2">
+<input type="hidden" name="land_abk" value="by">
+<input type="hidden" name="ger_id" value="0">
+<input type="hidden" name="az1" value="">
+<input type="hidden" name="az2" value="">
+<input type="hidden" name="az3" value="">
+<input type="hidden" name="az4" value="">
+<input type="hidden" name="art" value="">
+<input type="hidden" name="obj" value="">
+<input type="hidden" name="str" value="">
+<input type="hidden" name="hnr" value="">
+<input type="hidden" name="plz" value="">
+<input type="hidden" name="ort" value="">
+<input type="hidden" name="ortsteil" value="">
+<input type="hidden" name="vtermin" value="">
+<input type="hidden" name="btermin" value="">
+<!--Seiten zum Blaettern-->
+		<table border="1"><tbody><tr><td><select size="1" onchange="blaettern(this.options[this.selectedIndex].value,'-1','-1','-1','-1')"><option value="1-1-11" selected="">1-10</option><option value="11-11-21">11-20</option><option value="21-21-31">21-30</option><option value="31-31-41">31-36</option><option value="all">alle</option></select></td><td><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('1','1','11','-1','-1')">[1]</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('2','1','11','-1','-1')">&nbsp;2&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('3','1','11','-1','-1')">&nbsp;3&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('4','1','11','-1','-1')">&nbsp;4&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('5','1','11','-1','-1')">&nbsp;5&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('6','1','11','-1','-1')">&nbsp;6&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('7','1','11','-1','-1')">&nbsp;7&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('8','1','11','-1','-1')">&nbsp;8&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('9','1','11','-1','-1')">&nbsp;9&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('10','1','11','-1','-1')">&nbsp;10&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('11','11','21','-1','-1')">&nbsp;&gt;&gt;&nbsp;</button></td></tr></tbody></table>
+		<!--Seiten zum Blaettern Ende--><table border="0">   <!--Aktenzeichen--->
+		<tbody><tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48552&amp;land_abk=by">
+		<nobr>0803 K 0029/2025&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 20-04-2026 11:18)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>Wohnungseigentum mit Kellerabteil, Kfz -Stellplatz und Garage<!--Lage--->:</b> Untere Leite 12, 97532 Üchtelhausen, Zell</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>
+</p><table class="MsoNormalTable" style="margin-left: 3.0pt; border-collapse: collapse; mso-table-layout-alt: fixed; mso-padding-alt: 0cm 0cm 0cm 0cm;" border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="mso-yfti-irow: 0; mso-yfti-firstrow: yes; mso-yfti-lastrow: yes; page-break-inside: avoid; height: 14.25pt;">
+<td style="width: 151.5pt; background: white; padding: 3.0pt 3.0pt 3.0pt 3.0pt; height: 14.25pt;" width="202" valign="top">
+<p class="MsoNormal" style="margin-bottom: 0cm; line-height: normal; mso-pagination: none; mso-layout-grid-align: none; text-autospace: none;"><strong><span style="text-decoration: underline;"><span style="font-size: 11.0pt; font-family: &quot;Arial&quot;,sans-serif; color: black; mso-color-alt: windowtext; mso-font-kerning: 0pt;">Verkehrswert:</span></span></strong><strong></strong></p>
+</td>
+<td style="width: 113.25pt; background: white; padding: 3.0pt 3.0pt 3.0pt 3.0pt; height: 14.25pt;" width="151" valign="top">
+<p class="MsoNormal" style="margin-bottom: 0cm; text-align: right; line-height: normal; mso-pagination: none; mso-layout-grid-align: none; text-autospace: none;" align="right"><span style="font-size: 11.0pt; font-family: &quot;Arial&quot;,sans-serif; color: black; mso-color-alt: windowtext; mso-font-kerning: 0pt;">194.000,00&nbsp;€</span></p>
+</td>
+<td style="width: 198.75pt; background: white; padding: 3.0pt 3.0pt 3.0pt 3.0pt; height: 14.25pt;" width="265" valign="top">
+<p class="MsoNormal" style="margin-bottom: 0cm; line-height: normal; mso-pagination: none; mso-layout-grid-align: none; text-autospace: none;"><span style="font-size: 11.0pt; font-family: &quot;Arial&quot;,sans-serif; mso-font-kerning: 0pt;">&nbsp;</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p></p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Montag, 08. Juni 2026, 10:00 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=124682&amp;zvg_id=48552 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">163.49 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr>   <!--Aktenzeichen--->
+		<tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48478&amp;land_abk=by">
+		<nobr>K 0067/2023&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 04-05-2026 08:41)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>Wohn- u. Geschäftshaus mit Garagen<!--Lage--->:</b> Friedrich-Ebert-Straße 27, 95100 Selb</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>147.500,00 €</p>
+<p>&nbsp;</p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Montag, 08. Juni 2026, 10:00 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=124386&amp;zvg_id=48478 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">210.06 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr>   <!--Aktenzeichen--->
+		<tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48465&amp;land_abk=by">
+		<nobr>0001 K 0045/2025&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 25-03-2026 07:24)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>Wohngebäude<!--Lage--->:</b> Burggrub  20, 91332 Heiligenstadt, Burggrub</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>347.000,00 €</p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Montag, 08. Juni 2026, 11:00 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=124332&amp;zvg_id=48465 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">305.95 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr>   <!--Aktenzeichen--->
+		<tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48491&amp;land_abk=by">
+		<nobr>K 0078/2025&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 30-03-2026 14:35)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>Einfamilienwohnhaus<!--Lage--->:</b> Arnikaweg 26, 95126 Schwarzenbach a. d. Saale</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>326.000,00 €</p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Montag, 08. Juni 2026, 13:30 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=124425&amp;zvg_id=48491 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">209.05 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr>   <!--Aktenzeichen--->
+		<tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48533&amp;land_abk=by">
+		<nobr>K 0072/2025&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 14-04-2026 07:37)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>Einfamilienhaus<!--Lage--->:</b> Gartenstraße  9, 86494 Emersacker</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>474.000,00 €</p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Montag, 08. Juni 2026, 14:00 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=124602&amp;zvg_id=48533 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">117.71 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr>   <!--Aktenzeichen--->
+		<tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48554&amp;land_abk=by">
+		<nobr>K 0086/2023&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 17-04-2026 10:25)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>Webereigebäude<!--Lage--->:</b> Bergstraße 1 1/2, 95233 Helmbrechts</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>45.000,00 €</p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Dienstag, 09. Juni 2026, 08:30 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=124689&amp;zvg_id=48554 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">115.55 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr>    <!--Aktenzeichen--->
+                <tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b><font size="2px">
+                <nobr>0003 K 0099/2023</nobr></font></b><font size="2px">&nbsp;</font></td>
+                <td valign="top" align="right"><nobr>(letzte Aktualisierung 14-04-2026 17:26)</nobr></td></tr>
+ <!--Amtsgericht--->
+                <tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">
+		<font color="#C00000"><b>Der Termin Dienstag, 09. Juni 2026, 09:00 Uhr wurde aufgehoben.</b></font></td></tr><tr><td colspan="3"><hr></td></tr>   <!--Aktenzeichen--->
+		<tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48154&amp;land_abk=by">
+		<nobr>0003 K 0105/2024&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 29-01-2026 09:31)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>Eigentumswohnung (3 bis 4 Zimmer), siehe Beschreibung<!--Lage--->:</b> Schulstraße  22, 96358 Reichenbach</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>
+</p><table class="MsoNormalTable" style="margin-left: 3.0pt; border-collapse: collapse; mso-table-layout-alt: fixed; mso-padding-alt: 0cm 0cm 0cm 0cm;" border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="mso-yfti-irow: 0; mso-yfti-firstrow: yes; mso-yfti-lastrow: yes; page-break-inside: avoid; height: 14.25pt;">
+<td style="width: 151.5pt; background: white; padding: 3.0pt 3.0pt 3.0pt 3.0pt; height: 14.25pt;" width="202" valign="top">
+<p class="MsoNormal" style="margin-bottom: 0cm; line-height: normal; mso-pagination: none; mso-layout-grid-align: none; text-autospace: none;"><strong><span style="text-decoration: underline;"><span style="font-size: 11.0pt; font-family: &quot;Arial&quot;,sans-serif; color: black; mso-color-alt: windowtext; mso-font-kerning: 0pt;">Verkehrswert:</span></span></strong><strong><span style="text-decoration: underline;"></span></strong></p>
+</td>
+<td style="width: 113.25pt; background: white; padding: 3.0pt 3.0pt 3.0pt 3.0pt; height: 14.25pt;" width="151" valign="top">
+<p class="MsoNormal" style="margin-bottom: 0cm; text-align: right; line-height: normal; mso-pagination: none; mso-layout-grid-align: none; text-autospace: none;" align="right"><span style="font-size: 11.0pt; font-family: &quot;Arial&quot;,sans-serif; color: black; mso-color-alt: windowtext; mso-font-kerning: 0pt;">68.000,00&nbsp;€</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p></p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Dienstag, 09. Juni 2026, 09:00 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=123338&amp;zvg_id=48154 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">159.38 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr>   <!--Aktenzeichen--->
+		<tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48581&amp;land_abk=by">
+		<nobr>1517 K 0069/2023&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 24-04-2026 12:02)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>land- und forstwirtschaftlich genutztes Grundstück<!--Lage--->:</b> Westlich von Sauerlach, nördlich der Wolfratshausener Straße, 00000 Sauerlach</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>67.546,00</p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Dienstag, 09. Juni 2026, 10:00 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=124784&amp;zvg_id=48581 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">117.57 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr>   <!--Aktenzeichen--->
+		<tr><td valign="top" align="left"><nobr>Aktenzeichen&nbsp;&nbsp;</nobr></td><td valign="center" align="left"><b>
+		<a target="blank_" href="index.php?button=showZvg&amp;zvg_id=48523&amp;land_abk=by">
+		<nobr>0006 K 0043/2025&nbsp;(Detailansicht)</nobr></a></b>&nbsp;</td>
+		<td valign="top" align="right"><nobr>(letzte Aktualisierung 13-04-2026 07:38)</nobr></td></tr>
+		<!--Amtsgericht--->
+		<tr><td valign="top" align="left">Amtsgericht</td><td valign="center" align="left" colspan="2"><b> in Bayern</b></td></tr>
+		<tr><td valign="top" align="left">Objekt/Lage</td><td valign="center" align="left" colspan="2"><b>Einfamilienhaus, Garage<!--Lage--->:</b> Michelsberg 5, 92283 Lauterhofen</td></tr>
+  		<tr><td valign="top" align="left"><nobr>Verkehrswert in €&nbsp;</nobr></td><td valign="center" align="left" colspan="2"><b><p>265.000,00 €</p></b></td></tr>
+		<tr><td valign="top" align="left">Termin</td><td valign="center" align="left" colspan="2">Dienstag, 09. Juni 2026, 10:30 Uhr</td></tr><tr><td></td><td align="left" colspan="2"><a target="_blank" href="?button=showAnhang&amp;land_abk=by&amp;file_id=124569&amp;zvg_id=48523 ">Amtliche Bekanntmachung</a><img src="images/pdf.gif" class="icon" alt="PDF-Dokument, öffnet neues Browserfenster" height="18" width="18">
+<span class="kleinereSchrift">156.51 kB</span>
+</td></tr><tr><td colspan="3"><hr></td></tr></tbody></table>
+<!--Zwangsversteigerungen Ende-->
+<nobr><h3>Alle Termine, Insgesamt 351
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button onclick="document.form_sucheZvg.action='index.php?button=Termine suchen';document.form_sucheZvg.submit();">Suche ändern</button></h3></nobr>
+<!--Seiten zum Blaettern-->
+		<table border="1"><tbody><tr><td><select size="1" onchange="blaettern(this.options[this.selectedIndex].value,'-1','-1','-1','-1')"><option value="1-1-11" selected="">1-10</option><option value="11-11-21">11-20</option><option value="21-21-31">21-30</option><option value="31-31-41">31-36</option><option value="all">alle</option></select></td><td><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('1','1','11','-1','-1')">[1]</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('2','1','11','-1','-1')">&nbsp;2&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('3','1','11','-1','-1')">&nbsp;3&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('4','1','11','-1','-1')">&nbsp;4&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('5','1','11','-1','-1')">&nbsp;5&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('6','1','11','-1','-1')">&nbsp;6&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('7','1','11','-1','-1')">&nbsp;7&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('8','1','11','-1','-1')">&nbsp;8&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('9','1','11','-1','-1')">&nbsp;9&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('10','1','11','-1','-1')">&nbsp;10&nbsp;</button><button class="seiten_nr" onmouseover="this.className='seiten_nr_hover'" onmouseout="this.className='seiten_nr'" onclick="blaettern('11','11','21','-1','-1')">&nbsp;&gt;&gt;&nbsp;</button></td></tr></tbody></table>
+		<!--Seiten zum Blaettern Ende--></form><p></p>
+        </div><!-- ende Inhalt -->
+
+         <div id="addinfo"><!-- ende Addinfo -->
+            <h3>Weitere Infos</h3>
+            <ul>
+                <li class="publication"><a target="_blank" href="https://justiz.de">Justizportal des Bundes und der Länder</a></li>
+                <li class="publication"><a target="_blank" href="http://www.handelsregister.de">Gemeinsames Registerportal der Länder</a></li>
+                <!-- li class="publication"><a target=_blank  href="Zustaendigkeitsliste.pdf">Liste der zust&auml;ndigen Registrierungsbeh&ouml;rden</a></li -->
+                <!-- li class="publication"><a  href="index.php?button=Antragsformulare&sess_clean=1">Antragsformulare</a></li-->
+            </ul>
+        </div><!-- ende Addinfo -->
+
+<div class="screen" id="footer"><!-- Footer -->
+             <p><nobr><a href="javascript:window.print()">Seite drucken</a>&nbsp;.&nbsp;<a href="#inhalt">zum Anfang</a></nobr></p>
+        </div><!-- Ende Footer -->
+
+ </div><!-- ende Container -->
+
+    
+
+
+</body></html>

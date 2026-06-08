@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: EU Sanctions List API
+  description: |
+    Screen individuals and companies against the EU consolidated sanctions list (FSF).
+    Updated daily from official EU sources. 1,500+ sanctioned entities.
+    Required for AML/KYC compliance under EU regulations.
+
+    **Use cases:** Fintech KYC, crypto exchange AML, e-commerce fraud prevention, bank counterparty screening.
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/sanctions/search:
+    get:
+      summary: Search sanctioned entities
+      operationId: searchSanctions
+      tags: [Sanctions]
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, example: "Sberbank" }
+        - name: type
+          in: query
+          schema: { type: string, enum: [person, entity, ship] }
+        - name: maxResults
+          in: query
+          schema: { type: integer, default: 50, maximum: 200 }
+      responses:
+        "200":
+          description: Matching entities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/SanctionedEntity" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/sanctions/check:
+    get:
+      summary: Quick yes/no compliance check
+      description: Returns matched:true/false — faster than search for real-time screening.
+      operationId: checkSanctions
+      tags: [Sanctions]
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, example: "Vladimir Putin" }
+      responses:
+        "200":
+          description: Compliance result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query: { type: string }
+                  matched: { type: boolean }
+                  count: { type: integer }
+                  matches:
+                    type: array
+                    items: { $ref: "#/components/schemas/SanctionedEntity" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    SanctionedEntity:
+      type: object
+      properties:
+        id: { type: string }
+        subjectType: { type: string, enum: [person, entity, ship] }
+        names: { type: array, items: { type: string } }
+        aliases: { type: array, items: { type: string } }
+        nationalities: { type: array, items: { type: string } }
+        birthDates: { type: array, items: { type: string } }
+        sanctionGrounds: { type: string }
+  responses:
+    Unauthorized:
+      description: Invalid API key
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }

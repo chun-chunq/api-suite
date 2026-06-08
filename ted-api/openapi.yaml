@@ -1,0 +1,104 @@
+openapi: 3.0.3
+info:
+  title: EU TED Procurement Tenders API
+  description: |
+    Search EU public procurement notices from TED (Tenders Electronic Daily).
+    1M+ notices, updated daily. Filter by country, CPV code, buyer, value range.
+    Wraps the official TED REST API with simplified search and caching.
+
+    **Use cases:** Bid writers, procurement consultants, CRM enrichment, competitive intelligence.
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/ted/search:
+    get:
+      summary: Search procurement notices
+      operationId: searchTED
+      tags: [TED]
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string, example: "software development" }
+          description: Keywords
+        - name: country
+          in: query
+          schema: { type: string, example: "DE" }
+          description: ISO-2 buyer country
+        - name: cpv
+          in: query
+          schema: { type: string, example: "72000000" }
+          description: CPV code (EU procurement classification)
+        - name: from
+          in: query
+          schema: { type: string, format: date, example: "2024-01-01" }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+        - name: maxResults
+          in: query
+          schema: { type: integer, default: 25, maximum: 100 }
+      responses:
+        "200":
+          description: Procurement notices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/Notice" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+  /v1/ted/notice/{id}:
+    get:
+      summary: Get notice by ID
+      operationId: getTEDNotice
+      tags: [TED]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Notice details
+        "404": { description: Not found }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    Notice:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        buyer: { type: string }
+        country: { type: string }
+        publishedDate: { type: string, format: date }
+        deadlineDate: { type: string, format: date }
+        estimatedValue: { type: number }
+        currency: { type: string }
+        cpvCodes: { type: array, items: { type: string } }
+        noticeType: { type: string }
+        url: { type: string, format: uri }
+  responses:
+    Unauthorized:
+      description: Invalid API key
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }

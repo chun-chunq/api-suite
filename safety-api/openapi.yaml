@@ -1,0 +1,115 @@
+openapi: 3.0.3
+info:
+  title: EU Safety Gate Product Recalls API
+  description: |
+    Search dangerous product alerts and recalls from the EU Safety Gate / RAPEX system.
+    Updated weekly from official EU data. Covers electronics, toys, vehicles, clothing, food contact materials, and more.
+
+    **Use cases:** Amazon FBA seller compliance, product importer screening, e-commerce platform checks,
+    product liability law, retailer due diligence.
+  version: "1.0.0"
+  contact:
+    email: louismaximilianmeyer@gmail.com
+servers:
+  - url: https://api.yourdomain.com
+security:
+  - apiKey: []
+  - rapidApiKey: []
+paths:
+  /v1/recalls/search:
+    get:
+      summary: Search product recalls
+      operationId: searchRecalls
+      tags: [Recalls]
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string, example: "Samsung battery" }
+          description: Product name, brand, or keyword
+        - name: category
+          in: query
+          schema: { type: string, example: "Electrical appliances and equipment" }
+        - name: country
+          in: query
+          schema: { type: string, example: "DE" }
+          description: Country that notified the recall (ISO-2)
+        - name: origin
+          in: query
+          schema: { type: string, example: "CN" }
+          description: Country of origin of the product (ISO-2)
+        - name: risk
+          in: query
+          schema: { type: string, example: "serious" }
+        - name: from
+          in: query
+          schema: { type: string, format: date, example: "2023-01-01" }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+        - name: maxResults
+          in: query
+          schema: { type: integer, default: 50, maximum: 200 }
+      responses:
+        "200":
+          description: Product alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/Alert" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/recalls/categories:
+    get:
+      summary: List all product categories
+      operationId: getCategories
+      tags: [Recalls]
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+components:
+  securitySchemes:
+    apiKey: { type: apiKey, in: header, name: X-API-Key }
+    rapidApiKey: { type: apiKey, in: header, name: X-RapidAPI-Proxy-Secret }
+  schemas:
+    Alert:
+      type: object
+      properties:
+        reference: { type: string, example: "A12/01234/23" }
+        title: { type: string }
+        product: { type: string }
+        brand: { type: string }
+        category: { type: string }
+        riskType: { type: string }
+        riskLevel: { type: string, enum: [serious, high, medium, low] }
+        countryOfOrigin: { type: string }
+        notifyingCountry: { type: string }
+        notificationDate: { type: string, format: date }
+        measures: { type: string }
+        description: { type: string }
+  responses:
+    Unauthorized:
+      description: Invalid API key
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema: { type: object, properties: { error: { type: string } } }
