@@ -1,6 +1,6 @@
 module github.com/dpma-api
 
-go 1.26.4
+go 1.26
 
 require (
 	github.com/go-rod/rod v0.116.2

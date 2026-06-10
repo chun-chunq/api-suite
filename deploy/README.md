@@ -12,42 +12,41 @@
 
 ## Quick Start (Hetzner VPS, Ubuntu 22.04+)
 
-### Step 0 — Pack everything into one folder (Windows)
+> **Layout note:** the whole suite now lives in a single git repo
+> (`C:\api-suite`). There is no `pack.bat` step any more — just commit and push
+> normally (`git add -A && git commit -m "…" && git push`), then pull on the
+> server. All API folders are siblings of `deploy/` inside this one repo.
 
-Run this once on your Windows PC to assemble all 14 folders:
-
-```bat
-C:\deploy\pack.bat
-```
-
-This creates `C:\api-suite\` — one folder you can upload.
-
-### Step 1 — Upload to server
-
-```powershell
-# PowerShell (Windows)
-scp -r C:\api-suite root@YOUR_SERVER_IP:/srv/apis
-
-# or WSL / Git Bash
-rsync -av /c/api-suite/ root@YOUR_SERVER_IP:/srv/apis/
-```
+### Step 0 — Push your changes
 
 ```bash
-# 1. Upload everything to the server (legacy — use pack.bat above instead)
-rsync -av /path/to/apis/ root@YOUR_SERVER:/srv/apis/
+# On your Windows PC, from C:\api-suite
+git add -A
+git commit -m "your change"
+git push
+```
 
-# 2. SSH into server
+### Step 1 — Get it onto the server
+
+```bash
+# First time: clone the repo
 ssh root@YOUR_SERVER
+git clone https://github.com/chun-chunq/api-suite.git /srv/apis
 cd /srv/apis/deploy
 
-# 3. Configure secrets
+# Later updates: just pull
+cd /srv/apis && git pull
+
+# Configure secrets (first time only; an existing .env is preserved on pull)
 cp .env.template .env
 nano .env         # fill in API_KEYS, ADMIN_SECRET, WORKER_SECRET
 
-# 4. Start everything
+# Start everything
 chmod +x start.sh stop.sh update.sh
 ./start.sh
 ```
+
+*(Prefer not to use git on the server? You can still `rsync -av /c/api-suite/ root@YOUR_SERVER:/srv/apis/` — but exclude `.env`.)*
 
 ## Expected folder layout on server
 

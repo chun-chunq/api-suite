@@ -102,47 +102,21 @@ func main() {
 	reg := proxy.NewRegistry(log.Logger)
 
 	type up struct{ prefix, name, url string }
+	// Core "moat" APIs only — hard-to-get German/EU registry & compliance data.
+	// Commodity wrappers over free public APIs were removed (see deploy/README).
 	upstreamDefs := []up{
 		{"/v1/insolvency", "insolvency-api", "http://localhost:8080"},
 		{"/v1/zvg", "zvg-api", "http://localhost:8081"},
 		{"/v1/ted", "ted-api", "http://localhost:8082"},
 		{"/v1/trademark", "dpma-api", "http://localhost:8083"},
 		{"/v1/sanctions", "sanctions-api", "http://localhost:8084"},
-		{"/v1/recalls", "safety-api", "http://localhost:8085"},
 		{"/v1/ch", "zefix-api", "http://localhost:8086"},
 		{"/v1/bafin", "bafin-api", "http://localhost:8087"},
 		{"/v1/lei", "gleif-api", "http://localhost:8089"},
 		{"/v1/grants", "cordis-api", "http://localhost:8090"},
 		{"/v1/de", "handelsregister-api", "http://localhost:8092"},
 		{"/v1/eu-trademark", "euipo-api", "http://localhost:8093"},
-		{"/v1/fr", "french-company-api", "http://localhost:8094"},
-		{"/v1/uk", "uk-company-api", "http://localhost:8095"},
-		{"/v1/research", "research-api", "http://localhost:8096"},
 		{"/v1/gdpr", "gdpr-api", "http://localhost:8097"},
-		{"/v1/sec", "sec-api", "http://localhost:8098"},
-		{"/v1/food", "food-api", "http://localhost:8099"},
-		{"/v1/aviation", "aviation-api", "http://localhost:8100"},
-		{"/v1/weather", "weather-api", "http://localhost:8101"},
-		{"/v1/currency", "currency-api", "http://localhost:8102"},
-		{"/v1/drug", "openfda-api", "http://localhost:8103"},
-		{"/v1/wikidata", "wikidata-api", "http://localhost:8104"},
-		{"/v1/crypto", "crypto-api", "http://localhost:8105"},
-		{"/v1/books", "books-api", "http://localhost:8106"},
-		{"/v1/ipgeo", "ipgeo-api", "http://localhost:8107"},
-		{"/v1/vat", "vat-api", "http://localhost:8108"},
-		{"/v1/countries", "countries-api", "http://localhost:8109"},
-		{"/v1/chem", "pubchem-api", "http://localhost:8110"},
-		{"/v1/nasa", "nasa-api", "http://localhost:8111"},
-		{"/v1/pokemon", "pokeapi", "http://localhost:8112"},
-		{"/v1/air", "airquality-api", "http://localhost:8113"},
-		{"/v1/fx", "exchangerate-api", "http://localhost:8114"},
-		{"/v1/bio", "gbif-api", "http://localhost:8115"},
-		{"/v1/trivia", "trivia-api", "http://localhost:8116"},
-		{"/v1/numbers", "numbers-api", "http://localhost:8117"},
-		{"/v1/jokes", "joke-api", "http://localhost:8118"},
-		{"/v1/name", "namepredict-api", "http://localhost:8119"},
-		{"/v1/worldbank", "worldbank-api", "http://localhost:8120"},
-		{"/v1/trials", "clinicaltrials-api", "http://localhost:8121"},
 	}
 	for _, u := range upstreamDefs {
 		if err := reg.Register(u.prefix, u.name, u.url); err != nil {

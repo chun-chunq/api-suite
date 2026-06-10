@@ -30,6 +30,13 @@ func main() {
 	password := envOr("DASHBOARD_PASSWORD", "admin123")
 	adminSecret := envOr("ADMIN_SECRET", "admin-secret-aendere-mich")
 	port := envOr("PORT", "8088")
+	// basePath is the public URL prefix the dashboard is served under (behind
+	// nginx). All routes, links and redirects are built from it so login no
+	// longer bounces the browser to the site root. Default matches nginx.
+	basePath := "/" + strings.Trim(envOr("BASE_PATH", "/dashboard"), "/")
+	if basePath == "/" {
+		basePath = ""
+	}
 
 	level, _ := zerolog.ParseLevel(envOr("LOG_LEVEL", "info"))
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).
@@ -43,36 +50,13 @@ func main() {
 		{Name: "TED (EU Procurement)", Port: "8082", AdminSecret: adminSecret, Color: "#f39c12", Icon: "📋"},
 		{Name: "DPMA (Trademarks)", Port: "8083", AdminSecret: adminSecret, Color: "#27ae60", Icon: "™️"},
 		{Name: "Sanctions", Port: "8084", AdminSecret: adminSecret, Color: "#8e44ad", Icon: "🚫"},
-		{Name: "Safety Gate (Recalls)", Port: "8085", AdminSecret: adminSecret, Color: "#2980b9", Icon: "⚠️"},
 		{Name: "Zefix (Swiss Cos)", Port: "8086", AdminSecret: adminSecret, Color: "#16a085", Icon: "🇨🇭"},
 		{Name: "BaFin (Finance)", Port: "8087", AdminSecret: adminSecret, Color: "#c0392b", Icon: "🏦"},
 		{Name: "GLEIF (LEI)", Port: "8089", AdminSecret: adminSecret, Color: "#1a6fa8", Icon: "🏛"},
 		{Name: "CORDIS (EU Grants)", Port: "8090", AdminSecret: adminSecret, Color: "#2e7d32", Icon: "🔬"},
 		{Name: "Handelsregister", Port: "8092", AdminSecret: adminSecret, Color: "#7b1fa2", Icon: "📜"},
 		{Name: "EUIPO (EU Trademark)", Port: "8093", AdminSecret: adminSecret, Color: "#1565c0", Icon: "🇪🇺"},
-		{Name: "French Companies (SIRENE)", Port: "8094", AdminSecret: adminSecret, Color: "#0d47a1", Icon: "🇫🇷"},
-		{Name: "UK Companies House", Port: "8095", AdminSecret: adminSecret, Color: "#b71c1c", Icon: "🇬🇧"},
-		{Name: "Research (OpenAlex)", Port: "8096", AdminSecret: adminSecret, Color: "#00695c", Icon: "🔬"},
 		{Name: "GDPR Fines Tracker", Port: "8097", AdminSecret: adminSecret, Color: "#ad1457", Icon: "🔏"},
-		{Name: "SEC EDGAR (US Filings)", Port: "8098", AdminSecret: adminSecret, Color: "#1a237e", Icon: "🏛"},
-		{Name: "Food & Nutrition (OFF)", Port: "8099", AdminSecret: adminSecret, Color: "#2e7d32", Icon: "🥗"},
-		{Name: "Aviation (OpenSky)", Port: "8100", AdminSecret: adminSecret, Color: "#0277bd", Icon: "✈️"},
-		{Name: "Weather (Open-Meteo)", Port: "8101", AdminSecret: adminSecret, Color: "#00838f", Icon: "🌤️"},
-		{Name: "Currency (ECB FX)", Port: "8102", AdminSecret: adminSecret, Color: "#558b2f", Icon: "💱"},
-		{Name: "OpenFDA (Drug Data)", Port: "8103", AdminSecret: adminSecret, Color: "#e53935", Icon: "💊"},
-		{Name: "Wikidata (Knowledge Graph)", Port: "8104", AdminSecret: adminSecret, Color: "#006699", Icon: "🌐"},
-		{Name: "Crypto (CoinGecko)", Port: "8105", AdminSecret: adminSecret, Color: "#f57f17", Icon: "₿"},
-		{Name: "IP Geolocation", Port: "8107", AdminSecret: adminSecret, Color: "#37474f", Icon: "🌍"},
-		{Name: "VAT Validation (VIES)", Port: "8108", AdminSecret: adminSecret, Color: "#1b5e20", Icon: "🧾"},
-		{Name: "REST Countries", Port: "8109", AdminSecret: adminSecret, Color: "#4527a0", Icon: "🌎"},
-		{Name: "PubChem (Chemistry)", Port: "8110", AdminSecret: adminSecret, Color: "#00695c", Icon: "⚗️"},
-		{Name: "NASA Open Data", Port: "8111", AdminSecret: adminSecret, Color: "#0d47a1", Icon: "🚀"},
-		{Name: "Air Quality (Open-Meteo)", Port: "8113", AdminSecret: adminSecret, Color: "#33691e", Icon: "🌬️"},
-		{Name: "FX History (Frankfurter)", Port: "8114", AdminSecret: adminSecret, Color: "#bf360c", Icon: "📈"},
-		{Name: "Biodiversity (GBIF)", Port: "8115", AdminSecret: adminSecret, Color: "#2e7d32", Icon: "🦁"},
-		{Name: "Name Prediction", Port: "8119", AdminSecret: adminSecret, Color: "#880e4f", Icon: "👤"},
-		{Name: "World Bank Data", Port: "8120", AdminSecret: adminSecret, Color: "#1a237e", Icon: "🌍"},
-		{Name: "ClinicalTrials.gov", Port: "8121", AdminSecret: adminSecret, Color: "#880e4f", Icon: "🧬"},
 		{Name: "API Gateway", Port: "8000", AdminSecret: adminSecret, Color: "#212121", Icon: "🔀"},
 	}
 
@@ -82,40 +66,49 @@ func main() {
 	})
 	app.Use(recover.New())
 
+	loginPath := basePath + "/login"
+	logoutPath := basePath + "/logout"
+	rootPath := basePath + "/"
+
 	// Auth middleware
 	app.Use(func(c *fiber.Ctx) error {
-		if c.Path() == "/login" || c.Path() == "/logout" {
+		if c.Path() == loginPath || c.Path() == logoutPath {
 			return c.Next()
 		}
 		cookie := c.Cookies("dash_auth")
 		if cookie != password {
-			return c.Redirect("/login")
+			return c.Redirect(loginPath)
 		}
 		return c.Next()
 	})
 
-	app.Get("/login", handleLogin)
-	app.Post("/login", func(c *fiber.Ctx) error {
+	app.Get(loginPath, func(c *fiber.Ctx) error {
+		return c.Type("html").SendString(loginPage("", basePath))
+	})
+	app.Post(loginPath, func(c *fiber.Ctx) error {
 		pwd := c.FormValue("password")
 		if pwd != password {
-			return c.Status(401).SendString(loginPage("❌ Wrong password"))
+			return c.Status(401).SendString(loginPage("❌ Wrong password", basePath))
 		}
 		c.Cookie(&fiber.Cookie{
 			Name:     "dash_auth",
 			Value:    password,
+			Path:     "/",
 			Expires:  time.Now().Add(24 * time.Hour),
 			HTTPOnly: true,
 			SameSite: "Lax",
 		})
-		return c.Redirect("/")
+		return c.Redirect(rootPath)
 	})
-	app.Get("/logout", func(c *fiber.Ctx) error {
+	app.Get(logoutPath, func(c *fiber.Ctx) error {
 		c.ClearCookie("dash_auth")
-		return c.Redirect("/login")
+		return c.Redirect(loginPath)
 	})
 
-	app.Get("/", handleDashboard)
-	app.Get("/api/stats", handleStats)
+	app.Get(rootPath, func(c *fiber.Ctx) error {
+		return c.Type("html").SendString(dashboardHTML(basePath))
+	})
+	app.Get(basePath+"/api/stats", handleStats)
 
 	logger.Info().Str("port", port).Msg("dashboard started — http://localhost:" + port)
 	if err := app.Listen(":" + port); err != nil {
@@ -123,11 +116,7 @@ func main() {
 	}
 }
 
-func handleLogin(c *fiber.Ctx) error {
-	return c.Type("html").SendString(loginPage(""))
-}
-
-func loginPage(msg string) string {
+func loginPage(msg, basePath string) string {
 	return `<!DOCTYPE html><html><head>
 <title>API Dashboard — Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -148,14 +137,10 @@ button:hover{background:#5a67d8}
 		}
 		return ""
 	}() + `
-<form method="POST" action="/login">
+<form method="POST" action="` + basePath + `/login">
 <input type="password" name="password" placeholder="Password" autofocus autocomplete="current-password">
 <button type="submit">Login</button>
 </form></div></body></html>`
-}
-
-func handleDashboard(c *fiber.Ctx) error {
-	return c.Type("html").SendString(dashboardHTML())
 }
 
 func handleStats(c *fiber.Ctx) error {
@@ -234,7 +219,7 @@ func fetchJSON(url, adminSecret string) (map[string]any, error) {
 	return result, nil
 }
 
-func dashboardHTML() string {
+func dashboardHTML(basePath string) string {
 	return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -281,7 +266,7 @@ header a:hover{color:#e2e8f0}
   <h1>📊 API Analytics Dashboard</h1>
   <div style="display:flex;gap:1rem;align-items:center">
     <span class="refresh" id="lastUpdate">Loading…</span>
-    <a href="/logout">Logout</a>
+    <a href="` + basePath + `/logout">Logout</a>
   </div>
 </header>
 <div class="total-bar" id="totals"></div>
@@ -290,7 +275,7 @@ header a:hover{color:#e2e8f0}
 <script>
 async function load() {
   try {
-    const res = await fetch('/api/stats');
+    const res = await fetch('` + basePath + `/api/stats');
     const apis = await res.json();
     renderTotals(apis);
     renderCards(apis);

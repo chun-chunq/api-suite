@@ -1,0 +1,23 @@
+# Build artifacts — never commit compiled binaries
+*.exe
+*.test
+*.out
+/out/
+bin/
+dist/
+
+# Secrets — never commit a real .env
+.env
+*.env
+!.env.template
+!*.env.template
+
+# Go
+vendor/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

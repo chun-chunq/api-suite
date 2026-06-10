@@ -1,6 +1,6 @@
 module github.com/sanctions-api
 
-go 1.26.4
+go 1.26
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.13

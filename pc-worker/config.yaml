@@ -1,0 +1,23 @@
+# ============================================================
+#  PC-Worker Konfiguration
+#  Hier eintragen sobald der Hetzner-Server läuft:
+# ============================================================
+
+# URL des Hetzner-Servers (ohne trailing slash)
+server_url: "https://DEINE-DOMAIN.DE"
+
+# Gleiches Secret wie auf dem Server (WORKER_SECRET env var)
+worker_secret: "aendere-mich-geheim-123"
+
+# Chrome-Pfad (Standard für Windows, normalerweise nicht ändern)
+chrome_bin: 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+
+# Welche APIs soll dieser Worker bedienen?
+# "insolvency" = insolvency-api (Port 9090 auf Server)
+# "zvg"        = zvg-api        (Port 9091 auf Server)
+scrapers:
+  - insolvency
+  - zvg
+
+# Wie lange auf einen Job warten (long-poll), bevor neu gepollt wird
+poll_timeout_seconds: 30

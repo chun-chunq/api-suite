@@ -1,6 +1,6 @@
 module gateway
 
-go 1.26.4
+go 1.26
 
 require github.com/rs/zerolog v1.35.1
 
