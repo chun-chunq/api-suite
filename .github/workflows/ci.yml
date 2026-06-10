@@ -20,27 +20,32 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         service:
           - gateway
-          - namepredict-api
-          - worldbank-api
-          - clinicaltrials-api
-          - vat-api
-          - countries-api
-          - pubchem-api
-          - nasa-api
-          - airquality-api
-          - exchangerate-api
-          - gbif-api
+          - dashboard
+          - monitor
           - resilience
+          - insolvency-api
+          - zvg-api
+          - ted-api
+          - dpma-api
+          - sanctions-api
+          - zefix-api
+          - bafin-api
+          - gleif-api
+          - cordis-api
+          - handelsregister-api
+          - euipo-api
+          - gdpr-api
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.24"
+          go-version: "1.26"
           cache: true
           cache-dependency-path: "${{ matrix.service }}/go.sum"
 
@@ -63,12 +68,11 @@ jobs:
           docker compose config --quiet
         env:
           ADMIN_SECRET: "ci-test-secret"
-          API_KEYS: "test-key:basic"
+          API_KEYS: "test-key"
           DASHBOARD_PASSWORD: "ci-test"
           WORKER_SECRET: "ci-test"
-          COMPANIES_HOUSE_API_KEY: ""
+          BROWSERLESS_TOKEN: "ci-test"
           TED_API_KEY: ""
-          NASA_API_KEY: ""
           RAPIDAPI_PROXY_SECRET: ""
           DOMAIN: "example.com"
           SSL_EMAIL: "test@example.com"
